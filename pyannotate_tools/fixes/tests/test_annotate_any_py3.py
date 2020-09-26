@@ -5,16 +5,16 @@ from lib2to3.tests.test_fixers import FixerTestCase
 import unittest
 
 # deadcode: fix_annotate is used as part of the fixer_pkg for this test
-from pyannotate_tools.fixes import fix_annotate
+from pyannotate_tools.fixes import base
 
 
 class TestFixAnnotate3(FixerTestCase):
 
     def setUp(self):
         super(TestFixAnnotate3, self).setUp(
-            fix_list=["annotate"],
+            fix_list=["annotate_any"],
             fixer_pkg="pyannotate_tools",
-            options={'annotation_style' : 'py3'}
+            options={'annotation_style': 'py3'}
         )
 
     def test_no_arg_1(self) :
@@ -350,7 +350,7 @@ class TestFixAnnotate3(FixerTestCase):
             """
         self.check(a, b)
 
-        
+
     def test_keywords_1(self):
         a = """\
             def stuff(**kw):

@@ -34,7 +34,7 @@ except ImportError:
     # In Python 3.5.1 stdlib, typing.py does not define Text
     Text = str  # type: ignore
 
-from .fix_annotate import BaseFixAnnotate
+from .base import BaseFixAnnotate
 
 # Taken from mypy codebase:
 # https://github.com/python/mypy/blob/745d300b8304c3dcf601477762bf9d70b9a4619c/mypy/main.py#L503

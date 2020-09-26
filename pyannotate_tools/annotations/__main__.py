@@ -124,7 +124,7 @@ def main(args_override=None):
         return
 
     if args.auto_any:
-        fixers = ['pyannotate_tools.fixes.fix_annotate']
+        fixers = ['pyannotate_tools.fixes.fix_annotate_any']
     else:
         fixers = []
         if args.type_info:
