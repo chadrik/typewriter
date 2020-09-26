@@ -59,23 +59,23 @@ class BaseFixAnnotate(BaseFix):
     _maxfixes = os.getenv('MAXFIXES')
     counter = None if not _maxfixes else int(_maxfixes)
 
-    def transform(self, node, results):
+    def should_skip(self, node, results):
         if BaseFixAnnotate.counter is not None:
             if BaseFixAnnotate.counter <= 0:
-                return
+                return True
 
         # Check if there's already a long-form annotation for some argument.
         parameters = results.get('parameters')
         if parameters is not None:
             for ch in parameters.pre_order():
                 if ch.prefix.lstrip().startswith('# type:'):
-                    return
+                    return True
 
         args = results.get('args')
         if args is not None:
             for ch in args.pre_order():
                 if ch.prefix.lstrip().startswith('# type:'):
-                    return
+                    return True
 
         children = results['suite'][0].children
 
@@ -96,7 +96,7 @@ class BaseFixAnnotate(BaseFix):
         # Check if there's already an annotation.
         for ch in children:
             if ch.prefix.lstrip().startswith('# type:'):
-                return  # There's already a # type: comment here; don't change anything.
+                return True  # There's already a # type: comment here; don't change anything.
 
         # Python 3 style return annotation are already skipped by the pattern
 
@@ -157,12 +157,12 @@ class BaseFixAnnotate(BaseFix):
             if ch.type > 256:
                 # this is a node, therefore an annotation
                 assert ch.children[0].type == token.NAME
-                return
+                return True
             try:
                 ch = next(it)
                 if ch.type == token.COLON:
                     # this is an annotation
-                    return
+                    return True
                 elif ch.type == token.EQUAL:
                     ch = next(it)
                     ch = next(it)
@@ -170,6 +170,12 @@ class BaseFixAnnotate(BaseFix):
                 continue
             except StopIteration:
                 break
+
+        return False
+
+    def transform(self, node, results):
+        if self.should_skip(node, results):
+            return
 
         # Compute the annotation
         annot = self.make_annotation(node, results)

@@ -11,7 +11,7 @@ from lib2to3.main import StdoutRefactoringTool
 from typing import Any, Dict, List, Optional
 
 from pyannotate_tools.annotations.main import generate_annotations_json_string, unify_type_comments
-from pyannotate_tools.fixes.fix_annotate_json import FixAnnotateJson
+from pyannotate_tools.fixes.fix_annotate_json import BaseFixAnnotateFromSignature, FixAnnotateJson
 from pyannotate_tools.fixes.fix_annotate_command import FixAnnotateCommand
 
 parser = argparse.ArgumentParser()
@@ -148,7 +148,7 @@ def main(args_override=None):
         nobackups=True,
         show_diffs=not args.quiet)
     if not rt.errors:
-        with FixAnnotateJson.max_line_drift_set(args.max_line_drift):
+        with BaseFixAnnotateFromSignature.max_line_drift_set(args.max_line_drift):
             rt.refactor(args.files, write=args.write, num_processes=args.processes)
         if args.processes == 1:
             rt.summarize()

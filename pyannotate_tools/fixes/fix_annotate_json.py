@@ -154,7 +154,18 @@ def count_args(node, results):
 
 class BaseFixAnnotateFromSignature(BaseFixAnnotate):
 
+    line_drift = 5
     needed_imports = None  # type: Optional[Set[Tuple[str, str]]]
+
+    @classmethod
+    @contextmanager
+    def max_line_drift_set(cls, max_drift):
+        old_drift = cls.line_drift
+        cls.line_drift = max_drift
+        try:
+            yield
+        finally:
+            cls.line_drift = old_drift
 
     def add_import(self, mod, name):
         if mod == self.current_module():
@@ -290,17 +301,6 @@ class FixAnnotateJson(BaseFixAnnotateFromSignature):
     stub_json_file = os.getenv('TYPE_COLLECTION_JSON')
     # JSON data for the current file
     stub_json = None  # type: List[Dict[str, Any]]
-    line_drift = 5
-
-    @classmethod
-    @contextmanager
-    def max_line_drift_set(cls, max_drift):
-        old_drift = cls.line_drift
-        cls.line_drift = max_drift
-        try:
-            yield
-        finally:
-            cls.line_drift = old_drift
 
     @classmethod
     def init_stub_json_from_data(cls, data, filename):
