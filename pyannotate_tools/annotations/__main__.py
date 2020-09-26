@@ -15,40 +15,52 @@ from pyannotate_tools.fixes.fix_annotate_json import BaseFixAnnotateFromSignatur
 from pyannotate_tools.fixes.fix_annotate_command import FixAnnotateCommand
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--type-info', default='type_info.json', metavar="FILE",
-                    help="JSON input file (default type_info.json)")
-parser.add_argument('--command', '-c', metavar="COMMAND",
-                    help="Command to generate JSON info for a call site")
-parser.add_argument('--uses-signature', action='store_true',
-                    help="JSON input uses a signature format")
-parser.add_argument('-p', '--print-function', action='store_true',
-                    help="Assume print is a function")
-parser.add_argument('-w', '--write', action='store_true',
-                    help="Write output files")
-parser.add_argument('-j', '--processes', type=int, default=1, metavar="N",
-                    help="Use N parallel processes (default no parallelism)")
-parser.add_argument('--max-line-drift', type=int, default=5, metavar="N",
-                    help="Maximum allowed line drift when inserting annotation"
-                         " (can be useful for custom codecs)")
-parser.add_argument('-v', '--verbose', action='store_true',
-                    help="More verbose output")
-parser.add_argument('-q', '--quiet', action='store_true',
-                    help="Don't show diffs")
-parser.add_argument('-d', '--dump', action='store_true',
-                    help="Dump raw type annotations (filter by files, default all)")
-parser.add_argument('-a', '--auto-any', action='store_true',
-                    help="Annotate everything with 'Any', without reading type_info.json")
+
 parser.add_argument('files', nargs='*', metavar="FILE",
                     help="Files and directories to update with annotations")
-parser.add_argument('-s', '--only-simple', action='store_true',
-                    help="Only annotate functions with trivial types")
-parser.add_argument('--python-version', action='store', default='2', choices=['2', '3'],
-                    help="Choose annotation style, 2 for Python 2 with comments (the "
-                         "default), 3 for Python 3 with annotation syntax" )
-parser.add_argument('--py2', '-2', action='store_const', dest='python_version', const='2',
-                    help="Annotate for Python 2 with comments (default)")
-parser.add_argument('--py3', '-3', action='store_const', dest='python_version', const='3',
-                    help="Annotate for Python 3 with argument and return value annotations")
+
+json_group = parser.add_argument_group('json file options',
+                                       "Read type info from a json file")
+json_group.add_argument('--type-info', default='type_info.json', metavar="FILE",
+                        help="JSON input file (default type_info.json)")
+json_group.add_argument('--max-line-drift', type=int, default=5, metavar="N",
+                        help="Maximum allowed line drift when inserting annotation"
+                             " (can be useful for custom codecs)")
+json_group.add_argument('-d', '--dump', action='store_true',
+                        help="Dump raw type annotations and exit "
+                             "(filter by files, default all)")
+json_group.add_argument('--uses-signature', action='store_true',
+                        help="JSON input uses a signature format")
+json_group.add_argument('-s', '--only-simple', action='store_true',
+                        help="Only annotate functions with trivial types")
+
+cmd_group = parser.add_argument_group('command options',
+                                      "Generate type info by calling an "
+                                      "external program")
+cmd_group.add_argument('--command', '-c', metavar="COMMAND",
+                       help="Command to generate JSON info for a call site")
+
+
+other_group = parser.add_argument_group('other options')
+other_group.add_argument('-p', '--print-function', action='store_true',
+                         help="Assume print is a function")
+other_group.add_argument('-w', '--write', action='store_true',
+                         help="Write output files")
+other_group.add_argument('-j', '--processes', type=int, default=1, metavar="N",
+                         help="Use N parallel processes (default no parallelism)")
+other_group.add_argument('-v', '--verbose', action='store_true',
+                         help="More verbose output")
+other_group.add_argument('-q', '--quiet', action='store_true',
+                         help="Don't show diffs")
+other_group.add_argument('-a', '--auto-any', action='store_true',
+                         help="Annotate everything with 'Any', without reading type_info.json")
+other_group.add_argument('--python-version', action='store', default='2', choices=['2', '3'],
+                         help="Choose annotation style, 2 for Python 2 with comments (the "
+                              "default), 3 for Python 3 with annotation syntax" )
+other_group.add_argument('--py2', '-2', action='store_const', dest='python_version', const='2',
+                         help="Annotate for Python 2 with comments (default)")
+other_group.add_argument('--py3', '-3', action='store_const', dest='python_version', const='3',
+                         help="Annotate for Python 3 with argument and return value annotations")
 
 
 class ModifiedRefactoringTool(StdoutRefactoringTool):
