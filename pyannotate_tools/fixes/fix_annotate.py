@@ -40,6 +40,7 @@ from lib2to3.fixer_util import syms, touch_import, find_indentation
 from lib2to3.patcomp import compile_pattern
 from lib2to3.pgen2 import token
 from lib2to3.pytree import Leaf, Node
+from typing import Any, Dict, Iterator, List, Optional, Tuple, Union
 
 
 class BaseFixAnnotate(BaseFix):
@@ -69,6 +70,7 @@ class BaseFixAnnotate(BaseFix):
             for ch in parameters.pre_order():
                 if ch.prefix.lstrip().startswith('# type:'):
                     return
+
         args = results.get('args')
         if args is not None:
             for ch in args.pre_order():
@@ -188,12 +190,14 @@ class BaseFixAnnotate(BaseFix):
         self.patch_imports(argtypes + [restype], node)
 
     def add_py3_annot(self, argtypes, restype, node, results):
-        args = results.get('args')
+        # type: (List[str], str, Node, Dict[str, Any]) -> None
 
-        argleaves = []
+        args = results.get('args')  # type: Optional[Node]
+
+        argleaves = []  # type: List[Tuple[str, Leaf]]
         if args is None:
             # function with 0 arguments
-            it = iter([])
+            it = iter([])  # type: Iterator[Union[Leaf, Node]]
         elif len(args.children) == 0:
             # function with 1 argument
             it = iter([args])
@@ -214,6 +218,7 @@ class BaseFixAnnotate(BaseFix):
                 argstyle = 'keyword'
                 ch = next(it)
             assert ch.type == token.NAME
+            assert isinstance(ch, Leaf)
             argleaves.append((argstyle, ch))
             try:
                 ch = next(it)
@@ -245,10 +250,10 @@ class BaseFixAnnotate(BaseFix):
                 nextch = ch.next_sibling
                 if not nextch.prefix[:1].isspace():
                     nextch.prefix = ' ' + nextch.prefix
-                nextch = nextch.next_sibling
-                assert nextch != None
-                if not nextch.prefix[:1].isspace():
-                    nextch.prefix = ' ' + nextch.prefix
+                nextch_ = nextch.next_sibling
+                assert nextch_ is not None
+                if not nextch_.prefix[:1].isspace():
+                    nextch_.prefix = ' ' + nextch_.prefix
 
         # Add return annotation
         rpar = results['rpar']
@@ -257,6 +262,8 @@ class BaseFixAnnotate(BaseFix):
         rpar.changed()
 
     def add_py2_annot(self, argtypes, restype, node, results):
+        # type: (List[str], str, Node, Dict[str, Any]) -> None
+
         children = results['suite'][0].children
 
         # Insert '# type: {annot}' comment.
@@ -269,6 +276,7 @@ class BaseFixAnnotate(BaseFix):
                 children.insert(
                     1, Leaf(token.INDENT, find_indentation(node) + '    '))
                 children.append(Leaf(token.DEDENT, ''))
+
         if len(children) >= 2 and children[1].type == token.INDENT:
             degen_str = '(...) -> %s' % restype
             short_str = '(%s) -> %s' % (', '.join(argtypes), restype)
@@ -285,6 +293,8 @@ class BaseFixAnnotate(BaseFix):
                              (self.filename, node.get_lineno()))
 
     def insert_long_form(self, node, results, argtypes):
+        # type: (Node, Dict[str, Any], List[str]) -> None
+
         argtypes = list(argtypes)  # We destroy it
         args = results['args']
         if isinstance(args, Node):
@@ -316,17 +326,19 @@ class BaseFixAnnotate(BaseFix):
 
         check_self = self.is_method(node)
         for child in children:
-            if check_self and isinstance(child, Leaf) and child.type == token.NAME:
-                check_self = False
-                if child.value in ('self', 'cls'):
-                    argtypes.insert(0, '')
-            if not indent:
-                indent = ' ' * child.column
-            if isinstance(child, Leaf) and child.value == ',':
-                flag = True
-            elif isinstance(child, Leaf) and flag:
-                set_prefix(child)
-                flag = False
+            if isinstance(child, Leaf):
+                if check_self and child.type == token.NAME:
+                    check_self = False
+                    if child.value in ('self', 'cls'):
+                        argtypes.insert(0, '')
+                if not indent:
+                    indent = ' ' * child.column
+                if child.value == ',':
+                    flag = True
+                elif flag:
+                    set_prefix(child)
+                    flag = False
+
         need_comma = len(children) >= 1 and children[-1].type != token.COMMA
         if need_comma and len(children) >= 2:
             if (children[-1].type == token.NAME and
@@ -348,6 +360,12 @@ class BaseFixAnnotate(BaseFix):
                 break
 
     def make_annotation(self, node, results):
+        # type: (Node, Dict[str, Any]) -> Optional[Tuple[List[str], str]]
+        """Return the type annotations.
+
+        Given the current Note and the dictionary parsed from PATTERN
+        return the annoations for the arguments and return types as strings
+        """
         raise NotImplementedError
 
     # The parse tree has a different shape when there is a single

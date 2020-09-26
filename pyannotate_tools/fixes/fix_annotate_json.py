@@ -27,7 +27,7 @@ from lib2to3.fixer_util import syms, touch_import
 from lib2to3.pgen2 import token
 from lib2to3.pytree import Base, Leaf, Node
 from typing import __all__ as typing_all  # type: ignore
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Match, Optional, Set, Tuple, Union
 try:
     from typing import Text
 except ImportError:
@@ -83,7 +83,7 @@ def get_init_file(dir):
     return None
 
 def get_funcname(node):
-    # type: (Optional[Node]) -> Text
+    # type: (Optional[Union[Leaf, Node]]) -> Text
     """Get function name by (approximately) the following rules:
 
     - function -> function_name
@@ -154,7 +154,7 @@ def count_args(node, results):
 
 class BaseFixAnnotateFromSignature(BaseFixAnnotate):
 
-    needed_imports = None
+    needed_imports = None  # type: Optional[Set[Tuple[str, str]]]
 
     def add_import(self, mod, name):
         if mod == self.current_module():
@@ -174,18 +174,23 @@ class BaseFixAnnotateFromSignature(BaseFixAnnotate):
         self._current_module = crawl_up(filename)[1]
 
     def current_module(self):
+        # type: () -> str
         return self._current_module
 
     def get_types(self, node, results, funcname):
+        # type: (Node, Dict[str, Any], str) -> Optional[Tuple[List[str], str]]
+        """Return types for `funcname`."""
         raise NotImplementedError
 
     def make_annotation(self, node, results):
+        # type: (Node, Dict[str, Any]) -> Optional[Tuple[List[str], str]]
         name = results['name']
         assert isinstance(name, Leaf), repr(name)
         assert name.type == token.NAME, repr(name)
         funcname = get_funcname(node)
 
         def make(node, results, funcname):
+            # type: (Node, Any, str) -> Optional[Tuple[List[str], str]]
             sig_data = self.get_types(node, results, funcname)
             if sig_data:
                 arg_types, ret_type = sig_data
@@ -205,6 +210,8 @@ class BaseFixAnnotateFromSignature(BaseFixAnnotate):
         return res
 
     def process_types(self, node, results, arg_types, ret_type):
+        # type: (Node, Dict[str, Any], List[str], str) -> Optional[Tuple[List[str], str]]
+        """Process type annotations to handle star args, self-type, and imports."""
         # Passes 1-2 don't always understand *args or **kwds,
         # so add '*Any' or '**Any' at the end if needed.
         count, selfish, star, starstar = count_args(node, results)
@@ -247,11 +254,14 @@ class BaseFixAnnotateFromSignature(BaseFixAnnotate):
         return arg_types, ret_type
 
     def update_type_names(self, type_str):
+        # type: (str) -> str
+        """Fixup module names and add necessary imports."""
         # Replace e.g. `List[pkg.mod.SomeClass]` with
         # `List[SomeClass]` and remember to import it.
         return re.sub(r'[\w.:]+', self.type_updater, type_str)
 
     def type_updater(self, match):
+        # type: (Match) -> str
         # Replace `pkg.mod.SomeClass` with `SomeClass`
         # and remember to import it.
         word = match.group()
@@ -303,6 +313,7 @@ class FixAnnotateJson(BaseFixAnnotateFromSignature):
         self.__class__.init_stub_json_from_data(data, self.filename)
 
     def get_types(self, node, results, funcname):
+        # type: (Union[Leaf, Node], Dict[str, Any], str) -> Optional[Tuple[List[str], str]]
         if self.__class__.stub_json is None:
             self.init_stub_json()
         data = self.__class__.stub_json

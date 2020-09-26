@@ -3,8 +3,11 @@ from __future__ import absolute_import, print_function
 import json
 import shlex
 import subprocess
+from typing import Any, Dict, List, Optional, Tuple
 
+from lib2to3.pytree import Node
 from .fix_annotate_json import BaseFixAnnotateFromSignature, FixAnnotateJson as _FixAnnotateJson
+
 
 class FixAnnotateCommand(BaseFixAnnotateFromSignature):
     """Inserts annotations based on a command run in a subprocess for each
@@ -17,16 +20,18 @@ class FixAnnotateCommand(BaseFixAnnotateFromSignature):
     # run after FixAnnotateJson
     run_order = _FixAnnotateJson.run_order + 1
 
-    command = None
+    command = None  # type: str
 
     @classmethod
     def set_command(cls, command):
         cls.command = command
 
     def get_command(self, filename, lineno):
+        # type: (str, int) -> List[str]
         return shlex.split(self.command.format(filename=filename, lineno=lineno))
 
     def get_types(self, node, results, funcname):
+        # type: (Node, Dict[str, Any], str) -> Optional[Tuple[List[str], str]]
         cmd = self.get_command(self.filename, node.get_lineno())
         try:
             out = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
