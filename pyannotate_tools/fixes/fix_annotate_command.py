@@ -26,19 +26,27 @@ class FixAnnotateCommand(BaseFixAnnotateFromSignature):
     def set_command(cls, command):
         cls.command = command
 
-    def get_command(self, filename, lineno):
-        # type: (str, int) -> List[str]
-        return shlex.split(self.command.format(filename=filename, lineno=lineno))
+    def get_command(self, funcname, filename, lineno):
+        # type: (str, str, int) -> List[str]
+        return shlex.split(self.command.format(filename=filename, lineno=lineno,
+                                               funcname=funcname))
 
     def get_types(self, node, results, funcname):
         # type: (Node, Dict[str, Any], str) -> Optional[Tuple[List[str], str]]
-        cmd = self.get_command(self.filename, node.get_lineno())
+        cmd = self.get_command(funcname, self.filename, node.get_lineno())
         try:
             out = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as err:
-            self.log_message("Line %d: Failed calling `%s`: %s" %
-                             (node.get_lineno(), self.command,
-                              err.output.rstrip()))
+            # dmypy suggest exits 2 anytime it can't generate a suggestion,
+            # even for somewhat expected cases like when --no-any is enabled:
+            if err.returncode != 2:
+                self.log_message("Line %d: Failed calling %r: %s" %
+                                 (node.get_lineno(), cmd,
+                                  err.output.rstrip().encode()))
+            return None
+        except OSError as err:
+            self.log_message("Line %d: Failed calling %r: %s" %
+                             (node.get_lineno(), cmd, err))
             return None
 
         data = json.loads(out)
