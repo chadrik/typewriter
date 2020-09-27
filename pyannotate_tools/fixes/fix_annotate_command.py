@@ -6,7 +6,7 @@ import subprocess
 from typing import Any, Dict, List, Optional, Tuple
 
 from lib2to3.pytree import Node
-from .fix_annotate_json import BaseFixAnnotateFromSignature, FixAnnotateJson as _FixAnnotateJson
+from .fix_annotate_json import BaseFixAnnotateFromSignature
 
 
 class FixAnnotateCommand(BaseFixAnnotateFromSignature):
@@ -17,8 +17,6 @@ class FixAnnotateCommand(BaseFixAnnotateFromSignature):
     The fixer is run after FixAnnotateJson so that if an annotation is provided
     explicitly that fixer will win out.
     """
-    # run after FixAnnotateJson
-    run_order = _FixAnnotateJson.run_order + 1
 
     command = None  # type: str
 

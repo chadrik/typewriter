@@ -303,14 +303,16 @@ class FixAnnotateJson(BaseFixAnnotateFromSignature):
     stub_json = None  # type: List[Dict[str, Any]]
 
     @classmethod
-    def init_stub_json_from_data(cls, data, filename):
+    def init_stub_json_from_data(cls, data, filenames):
         cls.stub_json = data
-        cls.top_dir = crawl_up(os.path.abspath(filename))[0]
+        # FIXME: using a single file name as a sample to find the top directory
+        #  is fragile
+        cls.top_dir = crawl_up(os.path.abspath(filenames[0]))[0]
 
     def init_stub_json(self):
         with open(self.__class__.stub_json_file) as f:
             data = json.load(f)
-        self.__class__.init_stub_json_from_data(data, self.filename)
+        self.__class__.init_stub_json_from_data(data, [self.filename])
 
     def get_types(self, node, results, funcname):
         # type: (Union[Leaf, Node], Dict[str, Any], str) -> Optional[Tuple[List[str], str]]

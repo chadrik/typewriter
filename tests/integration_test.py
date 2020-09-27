@@ -60,7 +60,10 @@ class IntegrationTest(unittest.TestCase):
             f.write('from gcd import main\n')
             f.write(driver)
         subprocess.check_call([sys.executable, 'driver.py'])
-        output = subprocess.check_output([sys.executable, '-m', 'pyannotate_tools.annotations', 'gcd.py'])
+        output = subprocess.check_output([sys.executable, '-m',
+                                          'pyannotate_tools.annotations',
+                                          '--type-info=type_info.json',
+                                          'gcd.py'])
         lines = output.splitlines()
         assert b'+    # type: () -> None' in lines
         assert b'+    # type: (int, int) -> int' in lines
@@ -68,7 +71,9 @@ class IntegrationTest(unittest.TestCase):
     def test_auto_any(self):
         with open('gcd.py', 'w') as f:
             f.write(example)
-        output = subprocess.check_output([sys.executable, '-m', 'pyannotate_tools.annotations', '-a', 'gcd.py'])
+        output = subprocess.check_output([sys.executable, '-m',
+                                          'pyannotate_tools.annotations',
+                                          '-a', 'gcd.py'])
         lines = output.splitlines()
         assert b'+    # type: () -> None' in lines
         assert b'+    # type: (Any, Any) -> Any' in lines
@@ -77,7 +82,10 @@ class IntegrationTest(unittest.TestCase):
         with open('gcd.py', 'w') as f:
             f.write(example)
         try:
-            subprocess.check_output([sys.executable, '-m', 'pyannotate_tools.annotations', 'gcd.py'],
+            subprocess.check_output([sys.executable, '-m',
+                                     'pyannotate_tools.annotations',
+                                     'gcd.py',
+                                     '--type-info=type_info.json'],
                                     stderr=subprocess.STDOUT)
             assert False, "Expected an error"
         except subprocess.CalledProcessError as err:
@@ -96,7 +104,10 @@ class IntegrationTest(unittest.TestCase):
             f.write('from foo.gcd import main\n')
             f.write(driver)
         subprocess.check_call([sys.executable, 'driver.py'])
-        output = subprocess.check_output([sys.executable, '-m', 'pyannotate_tools.annotations', 'foo/gcd.py'])
+        output = subprocess.check_output([sys.executable, '-m',
+                                          'pyannotate_tools.annotations',
+                                          '--type-info=type_info.json',
+                                          'foo/gcd.py'])
         lines = output.splitlines()
         assert b'+    # type: () -> None' in lines
         assert b'+    # type: (int, int) -> int' in lines
@@ -111,7 +122,9 @@ class IntegrationTest(unittest.TestCase):
             f.write('from gcd import main\n')
             f.write(driver)
         subprocess.check_call([sys.executable, 'driver.py'])
-        output = subprocess.check_output([sys.executable, '-m', 'pyannotate_tools.annotations',
+        output = subprocess.check_output([sys.executable, '-m',
+                                          'pyannotate_tools.annotations',
+                                          '--type-info=type_info.json',
                                           # Construct platform-correct pathname:
                                           os.path.join('foo', 'gcd.py')])
         lines = output.splitlines()
@@ -128,7 +141,9 @@ class IntegrationTest(unittest.TestCase):
             f.write('from bar import main\n')
             f.write(driver)
         subprocess.check_call([sys.executable, 'driver.py'])
-        output = subprocess.check_output([sys.executable, '-m', 'pyannotate_tools.annotations',
+        output = subprocess.check_output([sys.executable, '-m',
+                                          'pyannotate_tools.annotations',
+                                          '--type-info=type_info.json',
                                           # Construct platform-correct pathname:
                                           os.path.join('foo', 'bar.py')])
         lines = output.splitlines()

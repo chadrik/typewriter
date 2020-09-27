@@ -38,7 +38,7 @@ class TestDunderMain(unittest.TestCase):
         self.tempfiles.append(name)
         with open(name, 'w') as f:
             f.write(data)
-    
+
     def test_help(self):
         # type: () -> None
         self.main_test(["--help"], r"^usage:", r"^$", 0)
@@ -112,6 +112,7 @@ gcd.py
         args = ['gcd.py']
         if write:
             args.append('-w')
+        args.extend(['--type-info', 'type_info.json'])
         self.main_test(args,
                        re.escape(stdout_expected) + r'\Z',
                        re.escape(stderr_expected) + r'\Z',
