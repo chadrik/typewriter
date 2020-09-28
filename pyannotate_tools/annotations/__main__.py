@@ -54,6 +54,22 @@ any_group = parser.add_argument_group('any options')
 any_group.add_argument('-a', '--auto-any', action='store_true',
                        help="Annotate everything with 'Any'")
 
+# format --
+format_group = parser.add_argument_group('output format options')
+format_group.add_argument('--annotation-style', default='auto',
+                          choices=['auto', 'py2', 'py3'],
+                          help="Choose annotation style, py2 for Python 2 with "
+                               "comments, py3 for Python 3 with annotation "
+                               "syntax. The default will be determined by the "
+                               "version of the current python interpreter")
+format_group.add_argument('--py2-comment-style', default='auto',
+                          choices=['auto', 'multi', 'single'],
+                          help="Choose comment style, multi adds a comment per "
+                               "argument, single produces one type comment for "
+                               "all arguments, and auto chooses between the two "
+                               "styles based on the number of arguments and "
+                               "length of comments")
+
 # other --
 other_group = parser.add_argument_group('other options')
 other_group.add_argument('-p', '--print-function', action='store_true',
@@ -66,13 +82,6 @@ other_group.add_argument('-v', '--verbose', action='store_true',
                          help="More verbose output")
 other_group.add_argument('-q', '--quiet', action='store_true',
                          help="Don't show diffs")
-other_group.add_argument('--python-version', action='store', default='2', choices=['2', '3'],
-                         help="Choose annotation style, 2 for Python 2 with comments (the "
-                              "default), 3 for Python 3 with annotation syntax" )
-other_group.add_argument('--py2', '-2', action='store_const', dest='python_version', const='2',
-                         help="Annotate for Python 2 with comments (default)")
-other_group.add_argument('--py3', '-3', action='store_const', dest='python_version', const='3',
-                         help="Annotate for Python 3 with argument and return value annotations")
 
 
 def load_config(arg_parser):
@@ -169,10 +178,9 @@ def main(args_override=None):
     if not args.files and not args.dump:
         parser.error("At least one file/directory is required")
 
-    if args.python_version not in ('2', '3'):
-        sys.exit('--python-version must be 2 or 3')
-
-    annotation_style = 'py' + args.python_version
+    annotation_style = args.annotation_style
+    if annotation_style == 'auto':
+        annotation_style = 'py%d' % sys.version_info[0]
 
     # Set up logging handler.
     level = logging.DEBUG if args.verbose else logging.INFO
@@ -215,8 +223,11 @@ def main(args_override=None):
     if args.auto_any:
         add_fixer(FixAnnotateAny)
 
-    flags = {'print_function': args.print_function,
-             'annotation_style': annotation_style}
+    flags = {
+        'print_function': args.print_function,
+        'annotation_style': annotation_style,
+        'comment_style': args.py2_comment_style
+    }
     rt = ModifiedRefactoringTool(
         fixers=fixers,
         options=flags,

@@ -15,7 +15,7 @@ class TestFixAnnotateJson(base_py2.AnnotateFromSignatureTestCase):
         super(TestFixAnnotateJson, self).setUp(
             fix_list=["annotate_json"],
             fixer_pkg="pyannotate_tools",
-            options={'annotation_style': 'py2'},
+            options={'annotation_style': 'py2', 'comment_style': 'auto'},
         )
         # See https://bugs.python.org/issue14243 for details
         self.tf = tempfile.NamedTemporaryFile(mode='w', delete=False)

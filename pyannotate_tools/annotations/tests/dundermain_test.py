@@ -112,7 +112,7 @@ gcd.py
         args = ['gcd.py']
         if write:
             args.append('-w')
-        args.extend(['--type-info', 'type_info.json'])
+        args.extend(['--type-info', 'type_info.json', '--annotation-style=py2'])
         self.main_test(args,
                        re.escape(stdout_expected) + r'\Z',
                        re.escape(stderr_expected) + r'\Z',

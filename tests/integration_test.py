@@ -63,6 +63,7 @@ class IntegrationTest(unittest.TestCase):
         output = subprocess.check_output([sys.executable, '-m',
                                           'pyannotate_tools.annotations',
                                           '--type-info=type_info.json',
+                                          '--annotation-style=py2',
                                           'gcd.py'])
         lines = output.splitlines()
         assert b'+    # type: () -> None' in lines
@@ -73,6 +74,7 @@ class IntegrationTest(unittest.TestCase):
             f.write(example)
         output = subprocess.check_output([sys.executable, '-m',
                                           'pyannotate_tools.annotations',
+                                          '--annotation-style=py2',
                                           '-a', 'gcd.py'])
         lines = output.splitlines()
         assert b'+    # type: () -> None' in lines
@@ -85,7 +87,8 @@ class IntegrationTest(unittest.TestCase):
             subprocess.check_output([sys.executable, '-m',
                                      'pyannotate_tools.annotations',
                                      'gcd.py',
-                                     '--type-info=type_info.json'],
+                                     '--type-info=type_info.json',
+                                     '--annotation-style=py2'],
                                     stderr=subprocess.STDOUT)
             assert False, "Expected an error"
         except subprocess.CalledProcessError as err:
@@ -107,6 +110,7 @@ class IntegrationTest(unittest.TestCase):
         output = subprocess.check_output([sys.executable, '-m',
                                           'pyannotate_tools.annotations',
                                           '--type-info=type_info.json',
+                                          '--annotation-style=py2',
                                           'foo/gcd.py'])
         lines = output.splitlines()
         assert b'+    # type: () -> None' in lines
@@ -125,6 +129,7 @@ class IntegrationTest(unittest.TestCase):
         output = subprocess.check_output([sys.executable, '-m',
                                           'pyannotate_tools.annotations',
                                           '--type-info=type_info.json',
+                                          '--annotation-style=py2',
                                           # Construct platform-correct pathname:
                                           os.path.join('foo', 'gcd.py')])
         lines = output.splitlines()
@@ -144,6 +149,7 @@ class IntegrationTest(unittest.TestCase):
         output = subprocess.check_output([sys.executable, '-m',
                                           'pyannotate_tools.annotations',
                                           '--type-info=type_info.json',
+                                          '--annotation-style=py2',
                                           # Construct platform-correct pathname:
                                           os.path.join('foo', 'bar.py')])
         lines = output.splitlines()

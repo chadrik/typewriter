@@ -13,7 +13,7 @@ class TestFixAnnotate(FixerTestCase):
         super(TestFixAnnotate, self).setUp(
             fix_list=["annotate_any"],
             fixer_pkg="pyannotate_tools",
-            options={'annotation_style': 'py2'},
+            options={'annotation_style': 'py2', 'comment_style': 'auto'},
         )
 
     def test_no_arg(self):

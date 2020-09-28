@@ -18,7 +18,7 @@ class TestFixAnnotateCommand(base_py2.AnnotateFromSignatureTestCase):
         super(TestFixAnnotateCommand, self).setUp(
             fix_list=["annotate_command"],
             fixer_pkg="pyannotate_tools",
-            options={'annotation_style': 'py2'},
+            options={'annotation_style': 'py2', 'comment_style': 'auto'},
         )
         self.patcher = None
         FixAnnotateCommand.set_command("fake {funcname} {filename}")

@@ -384,6 +384,15 @@ class BaseFixAnnotate(BaseFix):
 
         rpar.changed()
 
+    def use_py2_long_form(self, argtypes, short_str, degen_str):
+        if self.options['comment_style'] == 'single':
+            return False
+        elif self.options['comment_style'] == 'multi':
+            return False
+        else:  # auto
+            return ((len(short_str) > 64 or len(argtypes) > 5)
+                    and len(short_str) > len(degen_str))
+
     def add_py2_annot(self, argtypes, restype, node, results):
         # type: (List[str], str, Node, Dict[str, Any]) -> None
 
@@ -403,7 +412,7 @@ class BaseFixAnnotate(BaseFix):
         if len(children) >= 2 and children[1].type == token.INDENT:
             degen_str = '(...) -> %s' % restype
             short_str = '(%s) -> %s' % (', '.join(argtypes), restype)
-            if (len(short_str) > 64 or len(argtypes) > 5) and len(short_str) > len(degen_str):
+            if self.use_py2_long_form(argtypes, short_str, degen_str):
                 self.insert_long_form(node, results, argtypes)
                 annot_str = degen_str
             else:
