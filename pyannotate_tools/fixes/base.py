@@ -159,6 +159,9 @@ def count_args(node, results):
                 previous_token_is_star = False
     return count, selfish, star, starstar
 
+def is_type_comment(comment):
+    return TYPE_REG.match(comment)
+
 
 class BaseFixAnnotate(BaseFix):
 
@@ -417,9 +420,20 @@ class BaseFixAnnotate(BaseFix):
                 annot_str = degen_str
             else:
                 annot_str = short_str
-            children[1].prefix = '%s# type: %s\n%s' % (children[1].value, annot_str,
-                                                       children[1].prefix)
-            children[1].changed()
+
+            indent_node = children[1]
+            comment, sep, other_comments = indent_node.prefix.partition('\n')
+            comment = comment.rstrip() + sep
+            annot_str = '# type: %s\n' % (annot_str,)
+            if comment == annot_str:
+                return
+
+            if comment and not is_type_comment(comment):
+                # push existing non-type comment to next line
+                annot_str += comment
+
+            indent_node.prefix = indent_node.value + annot_str + other_comments
+            indent_node.changed()
         else:
             self.log_message("%s:%d: cannot insert annotation for one-line function" %
                              (self.filename, node.get_lineno()))
