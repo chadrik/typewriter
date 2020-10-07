@@ -29,7 +29,7 @@ except ImportError:
     # In Python 3.5.1 stdlib, typing.py does not define Text
     Text = str  # type: ignore
 
-from .base import BaseFixAnnotateFromSignature, crawl_up
+from .base import BaseFixAnnotateFromSignature
 
 
 class FixAnnotateJson(BaseFixAnnotateFromSignature):
@@ -39,11 +39,9 @@ class FixAnnotateJson(BaseFixAnnotateFromSignature):
     stub_json = None  # type: List[Dict[str, Any]]
 
     @classmethod
-    def init_stub_json_from_data(cls, data, filenames):
+    def init_stub_json_from_data(cls, data, base_dir):
         cls.stub_json = data
-        # FIXME: using a single file name as a sample to find the top directory
-        #  is fragile
-        cls.top_dir = crawl_up(os.path.abspath(filenames[0]))[0]
+        cls.top_dir = base_dir
 
     def init_stub_json(self):
         with open(self.__class__.stub_json_file) as f:
@@ -55,6 +53,8 @@ class FixAnnotateJson(BaseFixAnnotateFromSignature):
         if self.__class__.stub_json is None:
             self.init_stub_json()
         data = self.__class__.stub_json
+        # FIXME: this lookup code is inefficient and fragile.  We should restructure
+        #  the json to be keyed by (funcname, rel path), and compute a rel path from self.filename.
         # We are using relative paths in the JSON.
         items = [
             it for it in data

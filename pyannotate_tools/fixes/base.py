@@ -619,6 +619,7 @@ class BaseFixAnnotateFromSignature(BaseFixAnnotate):
 
     def current_module(self):
         # type: () -> str
+        """Return the dotted path of the module currently being transformed"""
         return self._current_module
 
     def get_types(self, node, results, funcname):

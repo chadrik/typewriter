@@ -13,9 +13,6 @@ class FixAnnotateCommand(BaseFixAnnotateFromSignature):
     """Inserts annotations based on a command run in a subprocess for each
     location.  The command is expected to output a json string in the same
     format output by `dmypy suggest` and `pyannotate_tool --type-info`
-
-    The fixer is run after FixAnnotateJson so that if an annotation is provided
-    explicitly that fixer will win out.
     """
 
     command = None  # type: str
