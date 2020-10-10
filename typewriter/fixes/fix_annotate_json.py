@@ -20,9 +20,9 @@ from __future__ import print_function
 
 import json  # noqa
 import os
-
 from lib2to3.pytree import Base, Leaf, Node
 from typing import Any, Dict, List, Optional, Tuple, Union
+
 try:
     from typing import Text
 except ImportError:

@@ -1,8 +1,9 @@
 # flake8: noqa
 # Our flake extension misfires on type comments in strings below.
 
-import unittest
 import sys
+import unittest
+
 try:
     from unittest.mock import patch
 except ImportError:

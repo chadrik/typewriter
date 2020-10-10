@@ -1,22 +1,14 @@
 import os
 import tempfile
 import unittest
-
 from typing import List, Optional, Tuple
 
-from typewriter.annotations.parse import parse_json, parse_type_comment, ParseError, tokenize
-from typewriter.annotations.types import (
-    AbstractType,
-    AnyType,
-    ARG_POS,
-    ARG_STAR,
-    ARG_STARSTAR,
-    Argument,
-    ClassType,
-    TupleType,
-    UnionType,
-    NoReturnType,
-)
+from typewriter.annotations.parse import (ParseError, parse_json,
+                                          parse_type_comment, tokenize)
+from typewriter.annotations.types import (ARG_POS, ARG_STAR, ARG_STARSTAR,
+                                          AbstractType, AnyType, Argument,
+                                          ClassType, NoReturnType, TupleType,
+                                          UnionType)
 
 
 class TestParseError(unittest.TestCase):

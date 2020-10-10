@@ -1,15 +1,14 @@
 from __future__ import absolute_import, print_function
 
-from lib2to3.pytree import Node
 from lib2to3 import pytree
-from lib2to3.pgen2 import token
 from lib2to3.fixer_util import syms
+from lib2to3.pgen2 import token
+from lib2to3.pytree import Node
 from typing import Any, Dict, List, Match, Optional, Tuple, cast
 
-from .fix_annotate_json import BaseFixAnnotateFromSignature
-from .base import get_funcname, typing_all
 from ..docs import formats
-
+from .base import get_funcname, typing_all
+from .fix_annotate_json import BaseFixAnnotateFromSignature
 
 SPECIAL_METHOD_RETURN = {
     '__init__': 'None'

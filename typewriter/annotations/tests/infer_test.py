@@ -1,23 +1,11 @@
 import unittest
-
 from typing import List, Tuple
 
-from typewriter.annotations.infer import (
-    flatten_types,
-    infer_annotation,
-    merge_items,
-    remove_redundant_items,
-)
-from typewriter.annotations.types import (
-    AbstractType,
-    AnyType,
-    ARG_POS,
-    ARG_STAR,
-    ClassType,
-    TupleType,
-    UnionType,
-    NoReturnType,
-)
+from typewriter.annotations.infer import (flatten_types, infer_annotation,
+                                          merge_items, remove_redundant_items)
+from typewriter.annotations.types import (ARG_POS, ARG_STAR, AbstractType,
+                                          AnyType, ClassType, NoReturnType,
+                                          TupleType, UnionType)
 
 
 class TestInfer(unittest.TestCase):

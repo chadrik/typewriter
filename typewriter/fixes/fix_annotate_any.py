@@ -1,9 +1,9 @@
 from __future__ import absolute_import, print_function
 
 import re
-
 from lib2to3.pgen2 import token
 from lib2to3.pytree import Leaf, Node
+
 from .base import BaseFixAnnotate
 
 

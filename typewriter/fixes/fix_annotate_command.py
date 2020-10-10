@@ -3,9 +3,9 @@ from __future__ import absolute_import, print_function
 import json
 import shlex
 import subprocess
+from lib2to3.pytree import Node
 from typing import Any, Dict, List, Optional, Tuple
 
-from lib2to3.pytree import Node
 from .fix_annotate_json import BaseFixAnnotateFromSignature
 
 

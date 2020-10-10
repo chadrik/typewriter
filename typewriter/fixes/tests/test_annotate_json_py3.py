@@ -10,7 +10,8 @@ try:
 except ImportError:
     from mock import patch
 
-from typewriter.fixes.fix_annotate_json import BaseFixAnnotateFromSignature, FixAnnotateJson
+from typewriter.fixes.fix_annotate_json import (BaseFixAnnotateFromSignature,
+                                                FixAnnotateJson)
 from typewriter.fixes.tests import base_py3
 
 

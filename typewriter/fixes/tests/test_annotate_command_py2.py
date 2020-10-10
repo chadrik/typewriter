@@ -3,6 +3,7 @@
 
 import json
 import subprocess
+
 from typewriter.fixes.fix_annotate_command import FixAnnotateCommand
 from typewriter.fixes.tests import base_py2
 

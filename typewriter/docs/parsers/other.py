@@ -29,14 +29,14 @@
 
 from __future__ import absolute_import, print_function
 
-
 import collections
 import re
+from typing import (Any, Callable, Deque, Generic, Iterable, Iterator, List,
+                    Optional, Tuple, TypeVar, Union, overload)
 
 from six import string_types
-from typewriter.docs.parsers import Arg
 
-from typing import Any, Callable, Deque, Generic, Iterable, Iterator, List, Optional, Tuple, TypeVar, Union, overload
+from typewriter.docs.parsers import Arg
 
 T = TypeVar('T')
 

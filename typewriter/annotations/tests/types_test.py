@@ -1,6 +1,7 @@
 import unittest
 
-from typewriter.annotations.types import AnyType, ClassType, TupleType, UnionType
+from typewriter.annotations.types import (AnyType, ClassType, TupleType,
+                                          UnionType)
 
 
 class TestTypes(unittest.TestCase):

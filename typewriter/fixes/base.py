@@ -36,12 +36,13 @@ import os
 import re
 from contextlib import contextmanager
 from lib2to3.fixer_base import BaseFix
-from lib2to3.fixer_util import syms, touch_import, find_indentation
+from lib2to3.fixer_util import find_indentation, syms, touch_import
 from lib2to3.patcomp import compile_pattern
 from lib2to3.pgen2 import token
 from lib2to3.pytree import Base, Leaf, Node
+from typing import (Any, Dict, Iterator, List, Match, Optional, Set, Text,
+                    Tuple, Union)
 from typing import __all__ as typing_all  # type: ignore
-from typing import Any, Dict, Iterator, List, Match, Optional, Set, Text, Tuple, Union
 
 # Taken from mypy codebase:
 # https://github.com/python/mypy/blob/745d300b8304c3dcf601477762bf9d70b9a4619c/mypy/main.py#L503

@@ -8,22 +8,12 @@ The collect_types tool is in pyannotate_runtime/collect_types.py.
 import json
 import re
 import sys
-from typing import Any, List, Mapping, Set, Text, Tuple, TypedDict, NoReturn
+from typing import Any, List, Mapping, NoReturn, Set, Text, Tuple, TypedDict
 
-from typing import Any, List, Mapping, Set, Tuple, Text, TypedDict
-
-from typewriter.annotations.types import (
-    AbstractType,
-    AnyType,
-    ARG_POS,
-    ARG_STAR,
-    ARG_STARSTAR,
-    Argument,
-    ClassType,
-    TupleType,
-    UnionType,
-    NoReturnType,
-)
+from typewriter.annotations.types import (ARG_POS, ARG_STAR, ARG_STARSTAR,
+                                          AbstractType, AnyType, Argument,
+                                          ClassType, NoReturnType, TupleType,
+                                          UnionType)
 
 PY2 = sys.version_info < (3,)
 

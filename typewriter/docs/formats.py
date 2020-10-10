@@ -1,8 +1,8 @@
 from __future__ import absolute_import, print_function
 
-import re
 import inspect
 import logging
+import re
 from collections import OrderedDict
 
 from typewriter.docs.parsers import Arg

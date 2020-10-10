@@ -1,15 +1,15 @@
 from __future__ import absolute_import, print_function
 
+from typing import Any, List
+
 import docutils.nodes
-from docutils.core import Publisher
 from docutils import io  # type: ignore
-from docutils.utils import SystemMessage
+from docutils.core import Publisher
 from docutils.nodes import Element, Node  # type: ignore
 from docutils.readers.standalone import Reader as _Reader
+from docutils.utils import SystemMessage
 
 from typewriter.docs.parsers import Arg
-
-from typing import Any, List
 
 
 def _clean_type(s):

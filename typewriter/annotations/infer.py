@@ -6,17 +6,9 @@ The main entry point is 'infer_annotation'.
 from typing import Dict, Iterable, List, Optional, Set, Tuple
 
 from typewriter.annotations.parse import parse_type_comment
-from typewriter.annotations.types import (
-    AbstractType,
-    AnyType,
-    ARG_POS,
-    Argument,
-    ClassType,
-    is_optional,
-    TupleType,
-    UnionType,
-    NoReturnType,
-)
+from typewriter.annotations.types import (ARG_POS, AbstractType, AnyType,
+                                          Argument, ClassType, NoReturnType,
+                                          TupleType, UnionType, is_optional)
 
 IGNORED_ITEMS = {
     'unittest.mock.Mock',
