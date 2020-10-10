@@ -57,7 +57,7 @@ class NoReturnType(AbstractType):
 
     def __repr__(self):
         # type: () -> str
-        return 'mypy_extensions.NoReturn'
+        return 'NoReturn'
 
     def __eq__(self, other):
         # type: (object) -> bool

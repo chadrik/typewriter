@@ -2,8 +2,7 @@
 
 import json
 
-from typing import List
-from mypy_extensions import TypedDict
+from typing import List, TypedDict
 
 from typewriter.annotations.types import ARG_STAR, ARG_STARSTAR
 from typewriter.annotations.infer import infer_annotation

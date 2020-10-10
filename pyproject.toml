@@ -1,0 +1,44 @@
+[tool.poetry]
+name = "typewriter"
+version = "0.1.0"
+description = "Add type annotations to your source code"
+authors = ["Chad Dombrova <chadrik@gmail.com>"]
+license = "Apache-2.0"
+readme = "README.md"
+repository = "https://github.com/chadrik/typewriter"
+keywords = ["pep484", "typing", "annotations", "mypy"]
+classifiers = [
+    'Development Status :: 3 - Alpha',
+    'Environment :: Console',
+    'Intended Audience :: Developers',
+    'License :: OSI Approved :: Apache Software License',
+    'Operating System :: POSIX',
+    'Programming Language :: Python :: 2',
+    'Programming Language :: Python :: 2.7',
+    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.6',
+    'Programming Language :: Python :: 3.7',
+    'Topic :: Software Development',
+]
+
+[tool.poetry.scripts]
+typewriter = 'typewriter.__main__:main'
+
+[tool.poetry.dependencies]
+python = "~2.7 || ^3.6"
+six = "*"
+docutils = "*"
+typing = { version = "3.7.*", python = "<3.7" }
+
+pytest = { version = "^6.1", optional = true }
+coverage = { version = "*", optional = true }
+
+[tool.poetry.extras]
+tests = ["pytest", "coverage"]
+
+[tool.poetry.dev-dependencies]
+tox = "^3.20"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

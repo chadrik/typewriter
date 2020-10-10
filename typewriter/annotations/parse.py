@@ -10,13 +10,7 @@ import re
 import sys
 from typing import Any, List, Mapping, Set, Text, Tuple, TypedDict, NoReturn
 
-from typing import Any, List, Mapping, Set, Tuple
-try:
-    from typing import Text
-except ImportError:
-    # In Python 3.5.1 stdlib, typing.py does not define Text
-    Text = str  # type: ignore
-from mypy_extensions import NoReturn, TypedDict
+from typing import Any, List, Mapping, Set, Tuple, Text, TypedDict
 
 from typewriter.annotations.types import (
     AbstractType,
