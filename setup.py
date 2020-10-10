@@ -8,19 +8,19 @@ def get_long_description():
     with open(filename) as f:
         return f.read()
 
-setup(name='pyannotate',
+setup(name='typewriter',
       version='1.2.0',
-      description="PyAnnotate: Auto-generate PEP-484 annotations",
+      description="TypeWriter: Generate PEP-484 type annotations",
       long_description=get_long_description(),
       long_description_content_type="text/markdown",
-      author='Dropbox',
-      author_email='guido@dropbox.com',
-      url='https://github.com/dropbox/pyannotate',
+      author='Chad Dombrova',
+      author_email='chadrik@gmail.com',
+      url='https://github.com/chadrik/typewriter',
       license='Apache 2.0',
       platforms=['POSIX'],
-      packages=['pyannotate_runtime', 'pyannotate_tools',
-                'pyannotate_tools.annotations', 'pyannotate_tools.fixes'],
-      entry_points={'console_scripts': ['pyannotate=pyannotate_tools.annotations.__main__:main']},
+      packages=['pyannotate_runtime', 'typewriter',
+                'typewriter.annotations', 'typewriter.fixes'],
+      entry_points={'console_scripts': ['typewriter=typewriter.annotations.__main__:main']},
       classifiers=[
           'Development Status :: 3 - Alpha',
           'Environment :: Console',
