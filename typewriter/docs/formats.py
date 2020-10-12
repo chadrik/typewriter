@@ -6,8 +6,6 @@ import re
 from collections import OrderedDict
 
 from typewriter.docs.parsers import Arg
-from typewriter.docs.parsers.other import GoogleDocstring, NumpyDocstring
-from typewriter.docs.parsers.rest import RestDocstring
 
 if False:
     from typing import *
@@ -238,7 +236,10 @@ class RestFormat(DocstringFormat):
         r'(\n|^):Yields:'
     )
 
-    parser_class = RestDocstring
+    @property
+    def parser_class(self):
+        from typewriter.docs.parsers.rest import RestDocstring
+        return RestDocstring
 
     def _parse(self, docstring):
         return self.parser_class(docstring, self).parse()
@@ -251,7 +252,10 @@ class NumpyFormat(DocstringFormat):
         r'(\n|^)Returns\n-------\n',
         r'(\n|^)Yields\n------\n'
     )
-    parser_class = NumpyDocstring
+    @property
+    def parser_class(self):
+        from typewriter.docs.parsers.other import NumpyDocstring
+        return NumpyDocstring
 
     def _parse(self, docstring):
         return self.parser_class(docstring).parse()
@@ -264,7 +268,10 @@ class GoogleFormat(DocstringFormat):
         r'(\n|^)Returns:\n',
         r'(\n|^)Yields:\n'
     )
-    parser_class = GoogleDocstring
+    @property
+    def parser_class(self):
+        from typewriter.docs.parsers.other import GoogleDocstring
+        return GoogleDocstring
 
     def _parse(self, docstring):
         return self.parser_class(docstring).parse()
