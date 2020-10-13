@@ -34,25 +34,10 @@ from .base import BaseFixAnnotateFromSignature
 
 class FixAnnotateJson(BaseFixAnnotateFromSignature):
 
-    stub_json_file = os.getenv('TYPE_COLLECTION_JSON')
-    # JSON data for the current file
-    stub_json = None  # type: List[Dict[str, Any]]
-
-    @classmethod
-    def init_stub_json_from_data(cls, data, base_dir):
-        cls.stub_json = data
-        cls.top_dir = base_dir
-
-    def init_stub_json(self):
-        with open(self.__class__.stub_json_file) as f:
-            data = json.load(f)
-        self.__class__.init_stub_json_from_data(data, [self.filename])
-
     def get_types(self, node, results, funcname):
         # type: (Union[Leaf, Node], Dict[str, Any], str) -> Optional[Tuple[List[str], str]]
-        if self.__class__.stub_json is None:
-            self.init_stub_json()
-        data = self.__class__.stub_json
+        data = self.options['typewriter']['type_info']
+        top_dir = self.options['typewriter']['top_dir']
         # FIXME: this lookup code is inefficient and fragile.  We should restructure
         #  the json to be keyed by (funcname, rel path), and compute a rel path from self.filename.
         # We are using relative paths in the JSON.
@@ -60,7 +45,7 @@ class FixAnnotateJson(BaseFixAnnotateFromSignature):
             it for it in data
             if it['func_name'] == funcname and
                (it['path'] == self.filename or
-                os.path.join(self.__class__.top_dir, it['path']) == os.path.abspath(self.filename))
+                os.path.join(top_dir, it['path']) == os.path.abspath(self.filename))
         ]
         if len(items) > 1:
             # this can happen, because of

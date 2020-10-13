@@ -11,7 +11,7 @@ into a type annoted version:
 	      # type: (Any, int) -> Any            # noqa: F821
 	      return bar + baz
 
-or (when setting options['annotation_style'] to 'py3'):
+or (when setting options['typewriter']['annotation_style'] to 'py3'):
 
 	  def foo(self, bar : Any, baz : int = 12) -> Any:
 	      return bar + baz
@@ -304,7 +304,7 @@ class BaseFixAnnotate(BaseFix):
             return
         argtypes, restype = annot
 
-        if self.options['annotation_style'] == 'py3':
+        if self.options['typewriter']['annotation_style'] == 'py3':
             self.add_py3_annot(argtypes, restype, node, results)
         else:
             self.add_py2_annot(argtypes, restype, node, results)
@@ -389,9 +389,9 @@ class BaseFixAnnotate(BaseFix):
         rpar.changed()
 
     def use_py2_long_form(self, argtypes, short_str, degen_str):
-        if self.options['comment_style'] == 'single':
+        if self.options['typewriter']['comment_style'] == 'single':
             return False
-        elif self.options['comment_style'] == 'multi':
+        elif self.options['typewriter']['comment_style'] == 'multi':
             return False
         else:  # auto
             return ((len(short_str) > 64 or len(argtypes) > 5)

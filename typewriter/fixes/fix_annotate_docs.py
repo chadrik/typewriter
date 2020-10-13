@@ -109,50 +109,23 @@ def keep_arg(i, arg_name, typ):
 class FixAnnotateDocs(BaseFixAnnotateFromSignature):
     """Inserts annotations by parsing docstrings."""
 
-    format_name = None  # type: Optional[str]
-    default_return_type = None  # type: Optional[str]
-
-    @classmethod
-    def set_format(cls, format_name):
-        # type: (str) -> None
-        """
-        Parameters
-        ----------
-        format_name : str
-        """
-        cls.format_name = format_name
-
-    @classmethod
-    def get_format(cls):
+    def get_format(self):
         # type: () -> str
         """
         Returns
         -------
         str
         """
-        assert cls.format_name is not None
-        return cls.format_name
+        return self.options['typewriter']['doc_format']
 
-    @classmethod
-    def set_default_return_type(cls, return_type):
-        # type: (str) -> None
-        """
-        Parameters
-        ----------
-        return_type : str
-        """
-        cls.default_return_type = return_type
-
-    @classmethod
-    def get_default_return_type(cls):
+    def get_default_return_type(self):
         # type: () -> str
         """
         Returns
         -------
         str
         """
-        assert cls.default_return_type is not None
-        return cls.default_return_type
+        return self.options['typewriter']['doc_default_return_type']
 
     def parse_docstring(self, docstring, line):
         # type: (str, int) -> Tuple[Dict[str, str], Optional[str]]

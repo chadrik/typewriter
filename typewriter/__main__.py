@@ -152,20 +152,6 @@ def load_config(arg_parser):
     return defaults
 
 
-class ModifiedRefactoringTool(StdoutRefactoringTool):
-    """Class that gives a nicer error message for bad encodings."""
-
-    def refactor_file(self, filename, write=False, doctests_only=False):
-        try:
-            super(ModifiedRefactoringTool, self).refactor_file(
-                filename, write=write, doctests_only=doctests_only)
-        except SyntaxError as err:
-            if str(err).startswith("unknown encoding:"):
-                self.log_error("Can't parse %s: %s", filename, err)
-            else:
-                raise
-
-
 def _main(args_override=None):
     # type: (Optional[List[str]]) -> List[str]
 
@@ -201,6 +187,12 @@ def _main(args_override=None):
         fixer_cls.run_order = BaseFixAnnotateFromSignature.run_order + len(fixers)
         fixers.append(fixer_cls.__module__)
 
+    options = {
+        'top_dir': input_base_dir,
+        'annotation_style': annotation_style,
+        'comment_style': args.py2_comment_style,
+    }
+
     if args.type_info:
         # Produce nice error message if type_info.json not found.
         try:
@@ -217,17 +209,18 @@ def _main(args_override=None):
                 args.type_info,
                 only_simple=args.only_simple)
 
-        # Run pass 3 with input from that variable.
-        FixAnnotateJson.init_stub_json_from_data(data, args.files)
+        # FIXME: in multi-process mode it may be faster to pass the json
+        #  file name and re-read it, rather than copy the data into each process
+        options['type_info'] = data
         add_fixer(FixAnnotateJson)
 
     if args.command:
-        FixAnnotateCommand.set_command(args.command)
+        options['command'] = args.command
         add_fixer(FixAnnotateCommand)
 
     if args.doc_format not in {None, 'off'}:
-        FixAnnotateDocs.set_format(args.doc_format)
-        FixAnnotateDocs.set_default_return_type(args.doc_default_return_type)
+        options['doc_format'] = args.doc_format
+        options['doc_default_return_type'] = args.doc_default_return_type
         add_fixer(FixAnnotateDocs)
 
     if args.auto_any:
@@ -236,10 +229,9 @@ def _main(args_override=None):
     flags = {
         'write_unchanged_files': args.write_unchanged_files,
         'print_function': args.print_function,
-        'annotation_style': annotation_style,
-        'comment_style': args.py2_comment_style
+        'typewriter': options,
     }
-    rt = ModifiedRefactoringTool(
+    rt = StdoutRefactoringTool(
         fixers=fixers,
         options=flags,
         explicit=fixers,

@@ -15,16 +15,11 @@ class FixAnnotateCommand(BaseFixAnnotateFromSignature):
     format output by `dmypy suggest` and `pyannotate_tool --type-info`
     """
 
-    command = None  # type: str
-
-    @classmethod
-    def set_command(cls, command):
-        cls.command = command
-
     def get_command(self, funcname, filename, lineno):
         # type: (str, str, int) -> List[str]
-        return shlex.split(self.command.format(filename=filename, lineno=lineno,
-                                               funcname=funcname))
+        command = self.options['typewriter']['command']
+        return shlex.split(command.format(filename=filename, lineno=lineno,
+                                          funcname=funcname))
 
     def get_types(self, node, results, funcname):
         # type: (Node, Dict[str, Any], str) -> Optional[Tuple[List[str], str]]

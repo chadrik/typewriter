@@ -16,24 +16,18 @@ class TestFixAnnotateJson(base_py2.AnnotateFromSignatureTestCase):
         super(TestFixAnnotateJson, self).setUp(
             fix_list=["annotate_json"],
             fixer_pkg="typewriter",
-            options={'annotation_style': 'py2', 'comment_style': 'auto'},
+            options={
+                'typewriter': {
+                    'annotation_style': 'py2',
+                    'comment_style': 'auto',
+                    'top_dir': '',
+                },
+            },
         )
-        # See https://bugs.python.org/issue14243 for details
-        self.tf = tempfile.NamedTemporaryFile(mode='w', delete=False)
-        FixAnnotateJson.stub_json_file = self.tf.name
-        FixAnnotateJson.stub_json = None
-
-    def tearDown(self):
-        FixAnnotateJson.stub_json = None
-        FixAnnotateJson.stub_json_file = None
-        self.tf.close()
-        os.remove(self.tf.name)
-        super(TestFixAnnotateJson, self).tearDown()
 
     def setTestData(self, data):
-        json.dump(data, self.tf)
-        self.tf.close()
         self.filename = data[0]["path"]
+        self.refactor.options['typewriter']['type_info'] = data
 
     def test_line_number_drift(self):
         self.setTestData(

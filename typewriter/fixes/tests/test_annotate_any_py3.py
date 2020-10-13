@@ -14,7 +14,11 @@ class TestFixAnnotate3(FixerTestCase):
         super(TestFixAnnotate3, self).setUp(
             fix_list=["annotate_any"],
             fixer_pkg="typewriter",
-            options={'annotation_style': 'py3'}
+            options={
+                'typewriter': {
+                    'annotation_style': 'py3',
+                },
+            },
         )
 
     def test_no_arg_1(self) :

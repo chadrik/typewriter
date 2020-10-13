@@ -19,13 +19,16 @@ class TestFixAnnotateCommand(base_py3.AnnotateFromSignatureTestCase):
         super(TestFixAnnotateCommand, self).setUp(
             fix_list=["annotate_command"],
             fixer_pkg="typewriter",
-            options={'annotation_style': 'py3'},
+            options={
+                'typewriter': {
+                    'annotation_style': 'py3',
+                    'command': "fake {funcname} {filename}",
+                },
+            },
         )
         self.patcher = None
-        FixAnnotateCommand.set_command("fake {funcname} {filename}")
 
     def tearDown(self):
-        FixAnnotateCommand.command = None
         if self.patcher is not None:
             self.patcher.stop()
             self.patcher = None
