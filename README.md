@@ -4,16 +4,16 @@ Insert PEP 484 type annotations into your python source code.
 
 ## Options
 
-TypeWriter currently supports 4 approaches (aka "fixers") for inserting 
+TypeWriter currently supports 4 approaches (aka "fixers") for inserting
 annotations, listed below.
 
-Multiple fixers can be used in tandem: if an annotation exists, or is 
-newly added by a previous fixer, all subsequent fixers will skip the location.  
-The one exception to this is the docstring fixer, which will overwrite existing 
-annotations if they do not agree with the types found in the docstrings, if any. 
+Multiple fixers can be used in tandem: if an annotation exists, or is
+newly added by a previous fixer, all subsequent fixers will skip the location.
+The one exception to this is the docstring fixer, which will overwrite existing
+annotations if they do not agree with the types found in the docstrings, if any.
 In other words, when enabled, the docstrings are considered the source of truth for types.
 
-The fixers are listed below in the order that they are called. 
+The fixers are listed below in the order that they are called.
 
 ### Read types from a json file
 
@@ -29,7 +29,7 @@ json file options:
 
 If you have a tool that is able to generate type information, you can output
 it in a format compatible with TypeWriter and it will insert them as annotations.
-The most common case for this would be if you're using 
+The most common case for this would be if you're using
 [PyAnnotate](https://github.com/dropbox/pyannotate) to inspect types at
 runtime (this project is itself a fork of PyAnnotate, focused solely on annotation
 generation).  Another scenario might be generating type info based on doxygen
@@ -81,22 +81,22 @@ docstring options:
 Maintaining types in docstrings can be desirable for a few reasons:
 
 - Your project has existing docstrings with types that are already mostly correct
-- You find it easier to maintain and comprehend types specified alongside the 
+- You find it easier to maintain and comprehend types specified alongside the
   description of an argument
 
 TypeWriter can parse the three major docstring conventions to find type info: [numpy](http://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_numpy.html#example-numpy), [google](http://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html) and [restructuredText](https://thomas-cokelaer.info/tutorials/sphinx/docstring_python.html#template-py-source-file)
 
-Regardless of the docstring convention you choose, the types declared within your 
-docstrings should following the guidelines in [PEP 484](https://www.python.org/dev/peps/pep-0484/), 
-especially use of the [`typing`](https://docs.python.org/3/library/typing.html) 
+Regardless of the docstring convention you choose, the types declared within your
+docstrings should following the guidelines in [PEP 484](https://www.python.org/dev/peps/pep-0484/),
+especially use of the [`typing`](https://docs.python.org/3/library/typing.html)
 module, where necessary.
 
 ### Set all types to Any
 
-One approach to typing an exiting project is to start by blanketing your code 
+One approach to typing an exiting project is to start by blanketing your code
 with types, so that you can enable `mypy --disallow-untyped-defs`
-straight out of the gate. This gets the boilerplate out of the way, and 
-"encourages" developers to add types to all new modules. 
+straight out of the gate. This gets the boilerplate out of the way, and
+"encourages" developers to add types to all new modules.
 
 ```
 any options:
@@ -131,7 +131,7 @@ other options:
 ## Configuration
 
 TypeWriter will read defaults from a configuration file named `typewriter.ini`,
-or `setup.cfg` in the current directory. 
+or `setup.cfg` in the current directory.
 
 For example:
 
@@ -142,7 +142,7 @@ files = typewriter
 command = dmypy suggest --json --no-any {filename}:{lineno}
 docstring_format = numpy
 write = true
-``` 
+```
 
 ## Installation
 

@@ -151,6 +151,7 @@ class InitDocsAtClassLevel:
 
     :rtype: bool
     """
+
     def __init__(self, one, two, three):
         # type: (Union[str, int], str, Any) -> bool
         pass

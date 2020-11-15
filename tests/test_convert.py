@@ -1,10 +1,11 @@
 from __future__ import absolute_import, print_function
 
 import logging
+
 import pytest
+
 from typewriter.__main__ import _main as main
 from typewriter.fixes.fix_annotate_docs import FixAnnotateDocs
-
 
 # def convert_string(input):
 #     tool = RefactoringTool(get_fixers_from_package("doc484.fixes"))

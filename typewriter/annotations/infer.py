@@ -17,6 +17,7 @@ IGNORED_ITEMS = {
     'mock.mock.MagicMock',
 }
 
+
 class InferError(Exception):
     """Raised if we can't infer a signature for some reason."""
 
@@ -135,12 +136,14 @@ def dedupe_types(types):
     # type: (Iterable[AbstractType]) -> List[AbstractType]
     return sorted(set(types), key=lambda t: str(t))
 
+
 def filter_ignored_items(items):
-     # type: (List[AbstractType]) -> List[AbstractType]
+    # type: (List[AbstractType]) -> List[AbstractType]
     result = [item for item in items
               if not isinstance(item, ClassType) or
               item.name not in IGNORED_ITEMS]
     return result or [AnyType()]
+
 
 def remove_redundant_items(items):
     # type: (List[AbstractType]) -> List[AbstractType]
@@ -171,7 +174,7 @@ def is_redundant_union_item(first, other):
         elif first.name == 'int' and other.name == 'float':
             return True
         elif (first.name in ('List', 'Dict', 'Set') and
-                  other.name == first.name):
+              other.name == first.name):
             if not first.args and other.args:
                 return True
             elif len(first.args) == len(other.args) and first.args:

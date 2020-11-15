@@ -87,6 +87,7 @@ class peek_iter(Generic[T]):
         be set to a new object instance: ``object()``.
 
     """
+
     def __init__(self, obj, sentitnel=None):
         # type: (Iterable[T], Any) -> None
         self._iterable = iter(obj)
@@ -286,6 +287,7 @@ class modify_iter(peek_iter[T]):
     "whitespace."
 
     """
+
     def __init__(self, obj, modifier, sentinel=None):
         # type: (Iterable[Any], Callable[[Any], T], Optional[Any]) -> None
         self.modifier = modifier

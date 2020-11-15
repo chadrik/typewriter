@@ -50,6 +50,7 @@ from typing import __all__ as typing_all  # type: ignore
 PY_EXTENSIONS = ['.pyi', '.py']
 TYPE_REG = re.compile('\s*#\s*type:.*')
 
+
 def crawl_up(arg):
     # type: (str) -> Tuple[str, str]
     """Given a .py[i] filename, return (root directory, module).
@@ -68,6 +69,7 @@ def crawl_up(arg):
             mod = base + '.' + mod
     return dir, mod
 
+
 def strip_py(arg):
     # type: (str) -> Optional[str]
     """Strip a trailing .py or .pyi suffix.
@@ -77,6 +79,7 @@ def strip_py(arg):
         if arg.endswith(ext):
             return arg[:-len(ext)]
     return None
+
 
 def get_init_file(dir):
     # type: (str) -> Optional[str]
@@ -90,6 +93,7 @@ def get_init_file(dir):
         if os.path.isfile(f):
             return f
     return None
+
 
 def get_funcname(node):
     # type: (Optional[Union[Leaf, Node]]) -> Text
@@ -111,6 +115,7 @@ def get_funcname(node):
             components.append(name.value)
         node = node.parent
     return '.'.join(reversed(components))
+
 
 def count_args(node, results):
     # type: (Node, Dict[str, Base]) -> Tuple[int, bool, bool, bool]
@@ -159,6 +164,7 @@ def count_args(node, results):
             if child.type != token.STAR:
                 previous_token_is_star = False
     return count, selfish, star, starstar
+
 
 def is_type_comment(comment):
     return TYPE_REG.match(comment)
@@ -221,7 +227,7 @@ class BaseFixAnnotate(BaseFix):
 
         # Python 3 style return annotation are already skipped by the pattern
 
-        ### Python 3 style argument annotation structure
+        # Python 3 style argument annotation structure
         #
         # Structure of the arguments tokens for one positional argument without default value :
         # + LPAR '('
@@ -691,7 +697,7 @@ class BaseFixAnnotateFromSignature(BaseFixAnnotate):
             ret_type = 'Optional[Any]'
         # Special case for generators.
         if (self.is_generator(node) and
-            not (ret_type == 'Iterator' or ret_type.startswith('Iterator['))):
+                not (ret_type == 'Iterator' or ret_type.startswith('Iterator['))):
             if ret_type.startswith('Optional['):
                 assert ret_type[-1] == ']'
                 ret_type = ret_type[9:-1]

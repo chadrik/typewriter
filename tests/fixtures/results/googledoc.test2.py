@@ -170,6 +170,7 @@ class InitDocsAtClassLevel:
         one (Union[str, int])
         two (str)
     """
+
     def __init__(self, one, two, three):
         # type: (Union[str, int], str, Any) -> None
         pass

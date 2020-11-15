@@ -142,7 +142,7 @@ gcd.py
         assert re.match(stdout_pattern, stdout_value)
         match = re.match(stderr_pattern, stderr_value)
         ## if not match: print("\nNah")
-        ## else: print("\nYa!")
-        ## print(stderr_value)
+        # else: print("\nYa!")
+        # print(stderr_value)
         ## import pdb; pdb.set_trace()
         assert code == exit_code

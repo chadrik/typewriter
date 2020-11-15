@@ -19,6 +19,7 @@ FunctionData = TypedDict('FunctionData', {'path': str,
                                           'samples': int})
 SIMPLE_TYPES = {'None', 'int', 'float', 'str', 'bytes', 'bool'}
 
+
 def unify_type_comments(type_comments):
     # type: (List[str]) -> Signature
     arg_types, return_type = infer_annotation(type_comments)

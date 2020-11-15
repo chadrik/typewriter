@@ -93,7 +93,6 @@ def tuple_arg(items):
     return Argument(TupleType(items), ARG_POS)
 
 
-
 class TestParseTypeComment(unittest.TestCase):
     def test_empty(self):
         # type: () -> None

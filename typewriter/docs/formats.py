@@ -252,6 +252,7 @@ class NumpyFormat(DocstringFormat):
         r'(\n|^)Returns\n-------\n',
         r'(\n|^)Yields\n------\n'
     )
+
     @property
     def parser_class(self):
         from typewriter.docs.parsers.other import NumpyDocstring
@@ -268,6 +269,7 @@ class GoogleFormat(DocstringFormat):
         r'(\n|^)Returns:\n',
         r'(\n|^)Yields:\n'
     )
+
     @property
     def parser_class(self):
         from typewriter.docs.parsers.other import GoogleDocstring

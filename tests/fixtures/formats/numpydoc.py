@@ -219,6 +219,7 @@ class InitDocsAtClassLevel:
     one : Union[str, int]
     two : str
     """
+
     def __init__(self, one, two, three):
         pass
 

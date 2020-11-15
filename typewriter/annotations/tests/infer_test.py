@@ -18,60 +18,60 @@ class TestInfer(unittest.TestCase):
         # type: () -> None
         self.assert_infer(['(int) -> None',
                            '(str) -> None'],
-                           ([(UnionType([ClassType('int'),
-                                         ClassType('str')]), ARG_POS)],
-                            ClassType('None')))
+                          ([(UnionType([ClassType('int'),
+                                        ClassType('str')]), ARG_POS)],
+                           ClassType('None')))
 
     def test_infer_union_return(self):
         # type: () -> None
         self.assert_infer(['() -> int',
                            '() -> str'],
-                           ([],
-                            UnionType([ClassType('int'), ClassType('str')])))
+                          ([],
+                           UnionType([ClassType('int'), ClassType('str')])))
 
     def test_star_arg(self):
         # type: () -> None
         self.assert_infer(['(int) -> None',
                            '(int, *bool) -> None'],
-                           ([(ClassType('int'), ARG_POS),
-                             (ClassType('bool'), ARG_STAR)],
-                            ClassType('None')))
+                          ([(ClassType('int'), ARG_POS),
+                            (ClassType('bool'), ARG_STAR)],
+                           ClassType('None')))
 
     def test_merge_unions(self):
         # type: () -> None
         self.assert_infer(['(Union[int, str]) -> None',
                            '(Union[str, None]) -> None'],
-                           ([(UnionType([ClassType('int'),
-                                         ClassType('str'),
-                                         ClassType('None')]), ARG_POS)],
-                            ClassType('None')))
+                          ([(UnionType([ClassType('int'),
+                                        ClassType('str'),
+                                        ClassType('None')]), ARG_POS)],
+                           ClassType('None')))
 
     def test_remove_redundant_union_item(self):
         # type: () -> None
         self.assert_infer(['(str) -> None',
                            '(unicode) -> None'],
-                           ([(ClassType('Text'), ARG_POS)],
-                            ClassType('None')))
+                          ([(ClassType('Text'), ARG_POS)],
+                           ClassType('None')))
 
     def test_remove_redundant_dict_item(self):
         # type: () -> None
         self.assert_infer(['(Dict[str, Any]) -> None',
                            '(Dict[str, str]) -> None'],
-                           ([(ClassType('Dict', [ClassType('str'), AnyType()]), ARG_POS)],
-                            ClassType('None')))
+                          ([(ClassType('Dict', [ClassType('str'), AnyType()]), ARG_POS)],
+                           ClassType('None')))
 
     def test_remove_redundant_dict_item_when_simplified(self):
         # type: () -> None
         self.assert_infer(['(Dict[str, Any]) -> None',
-                            '(Dict[str, Union[str, List, Dict, int]]) -> None'],
-                            ([(ClassType('Dict', [ClassType('str'), AnyType()]), ARG_POS)],
-                            ClassType('None')))
+                           '(Dict[str, Union[str, List, Dict, int]]) -> None'],
+                          ([(ClassType('Dict', [ClassType('str'), AnyType()]), ARG_POS)],
+                           ClassType('None')))
 
     def test_simplify_list_item_types(self):
         # type: () -> None
         self.assert_infer(['(List[Union[bool, int]]) -> None'],
                           ([(ClassType('List', [ClassType('int')]), ARG_POS)],
-                            ClassType('None')))
+                           ClassType('None')))
 
     def test_simplify_potential_typed_dict(self):
         # type: () -> None
@@ -96,8 +96,8 @@ class TestInfer(unittest.TestCase):
         # type: () -> None
         self.assert_infer(['() -> Tuple[List, List[x]]',
                            '() -> Tuple[List, List]'],
-                           ([],
-                            TupleType([ClassType('List'), ClassType('List', [ClassType('x')])])))
+                          ([],
+                           TupleType([ClassType('List'), ClassType('List', [ClassType('x')])])))
 
     def assert_infer(self, comments, expected):
         # type: (List[str], Tuple[List[Tuple[AbstractType, str]], AbstractType]) -> None
@@ -108,21 +108,22 @@ class TestInfer(unittest.TestCase):
         # type: () -> None
         self.assert_infer(['(mock.mock.Mock) -> None',
                            '(str) -> None'],
-                           ([(ClassType('str'), ARG_POS)],
-                            ClassType('None')))
+                          ([(ClassType('str'), ARG_POS)],
+                           ClassType('None')))
 
     def test_infer_ignore_mock_fallback_to_any(self):
         # type: () -> None
         self.assert_infer(['(mock.mock.Mock) -> str',
                            '(mock.mock.Mock) -> int'],
-                           ([(AnyType(), ARG_POS)],
-                            UnionType([ClassType('str'), ClassType('int')])))
+                          ([(AnyType(), ARG_POS)],
+                           UnionType([ClassType('str'), ClassType('int')])))
 
     def test_infer_none_argument(self):
         # type: () -> None
         self.assert_infer(['(None) -> None'],
-                           ([(UnionType([ClassType('None'), AnyType()]), ARG_POS)],
-                            ClassType('None')))
+                          ([(UnionType([ClassType('None'), AnyType()]), ARG_POS)],
+                           ClassType('None')))
+
 
 CT = ClassType
 

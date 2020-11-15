@@ -10,7 +10,7 @@ class TestTypes(unittest.TestCase):
         assert str(ClassType('int')) == 'int'
         assert str(ClassType('List', [ClassType('int')])) == 'List[int]'
         assert str(ClassType('Dict', [ClassType('int'),
-                                     ClassType('str')])) == 'Dict[int, str]'
+                                      ClassType('str')])) == 'Dict[int, str]'
 
     def test_any_type_str(self):
         # type: () -> None
