@@ -203,6 +203,30 @@ class AnnotateFromSignatureTestCase(FixerTestCase):
             """
         self.check(a, b)
 
+    def test_type_by_import(self):
+        self.setTestData(
+            [{"func_name": "nop",
+              "path": "mod1.py",
+              "line": 1,
+              "signature": {
+                  "arg_types": ["mod1.MyClass"],
+                  "return_type": "mod2.AnotherClass"},
+              }])
+        a = """\
+            import mod2
+            def nop(foo):
+                return mod2.AnotherClass()
+            class MyClass: pass
+            """
+        b = """\
+            import mod2
+            def nop(foo):
+                # type: (MyClass) -> mod2.AnotherClass
+                return mod2.AnotherClass()
+            class MyClass: pass
+            """
+        self.check(a, b)
+
     def test_add_kwds(self):
         self.setTestData(
             [{"func_name": "nop",
