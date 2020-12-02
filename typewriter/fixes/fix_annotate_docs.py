@@ -1,7 +1,7 @@
 from __future__ import absolute_import, print_function
 
 from lib2to3 import pytree
-from lib2to3.fixer_util import syms
+from lib2to3.fixer_util import does_tree_import, syms
 from lib2to3.pgen2 import token
 from lib2to3.pytree import Node
 from typing import Any, Dict, List, Match, Optional, Tuple, cast
@@ -152,14 +152,13 @@ class FixAnnotateDocs(BaseFixAnnotateFromSignature):
     def should_skip(self, node, results):
         return False
 
-    def type_updater(self, match):
-        # type: (Match) -> str
+    def type_updater(self, match, node):
+        # type: (Match, Node) -> str
         # Replace `pkg.mod.SomeClass` with `SomeClass`
         # and remember to import it.
         word = match.group()
         # Assume it's either builtin or from `typing`
-        if word in typing_all:
-            self.add_import('typing', word)
+        self.touch_typing_import(word, node)
         return word
 
     def make_annotation(self, node, results):
@@ -232,6 +231,6 @@ class FixAnnotateDocs(BaseFixAnnotateFromSignature):
                 if not is_method or keep_arg(i, arg_name, typ):
                     arg_types.append(kind + _get_type(typ).strip('*'))
 
-        arg_types = [self.update_type_names(arg_type) for arg_type in arg_types]
-        ret_type = self.update_type_names(ret_type)
+        arg_types = [self.update_type_names(arg_type, node) for arg_type in arg_types]
+        ret_type = self.update_type_names(ret_type, node)
         return arg_types, ret_type

@@ -36,13 +36,16 @@ import os
 import re
 from contextlib import contextmanager
 from lib2to3.fixer_base import BaseFix
-from lib2to3.fixer_util import find_indentation, syms, touch_import
+from lib2to3.fixer_util import (does_tree_import, find_indentation, syms,
+                                touch_import)
 from lib2to3.patcomp import compile_pattern
 from lib2to3.pgen2 import token
 from lib2to3.pytree import Base, Leaf, Node
 from typing import (Any, Dict, Iterator, List, Match, Optional, Set, Text,
                     Tuple, Union)
 from typing import __all__ as typing_all  # type: ignore
+
+from typewriter.fixes.fixer_utils import create_import, type_by_import_stmt
 
 # Taken from mypy codebase:
 # https://github.com/python/mypy/blob/745d300b8304c3dcf601477762bf9d70b9a4619c/mypy/main.py#L503
@@ -622,10 +625,25 @@ class BaseFixAnnotateFromSignature(BaseFixAnnotate):
             self.needed_imports = set()
         self.needed_imports.add((mod, name))
 
+    def touch_typing_import(self, word, node):
+        # type: (str, Node) -> None
+        """
+        Checks whether there exists import for type <word> and if not adds it to the instance
+        import list
+
+        Parameters
+        -----------
+        word : str
+        node : Node
+        """
+        if word in typing_all:
+            if not does_tree_import('typing', word, node):
+                self.add_import('typing', word)
+
     def patch_imports(self, types, node):
         if self.needed_imports:
             for mod, name in sorted(self.needed_imports):
-                touch_import(mod, name, node)
+                create_import(mod, name, node)
         self.needed_imports = None
 
     def set_filename(self, filename):
@@ -699,7 +717,7 @@ class BaseFixAnnotateFromSignature(BaseFixAnnotate):
                              (self.filename, node.get_lineno(), count, len(arg_types)))
             return None
 
-        arg_types = [self.update_type_names(arg_type) for arg_type in arg_types]
+        arg_types = [self.update_type_names(arg_type, node) for arg_type in arg_types]
         # Avoid common error "No return value expected"
         if ret_type == 'None' and self.has_return_exprs(node):
             ret_type = 'Optional[Any]'
@@ -710,18 +728,18 @@ class BaseFixAnnotateFromSignature(BaseFixAnnotate):
                 assert ret_type[-1] == ']'
                 ret_type = ret_type[9:-1]
             ret_type = 'Iterator[%s]' % ret_type
-        ret_type = self.update_type_names(ret_type)
+        ret_type = self.update_type_names(ret_type, node)
         return arg_types, ret_type
 
-    def update_type_names(self, type_str):
-        # type: (str) -> str
+    def update_type_names(self, type_str, node):
+        # type: (str, Node) -> str
         """Fixup module names and add necessary imports."""
         # Replace e.g. `List[pkg.mod.SomeClass]` with
         # `List[SomeClass]` and remember to import it.
-        return re.sub(r'[\w.:]+', self.type_updater, type_str)
+        return re.sub(r'[\w.:]+', lambda m: self.type_updater(m, node), type_str)
 
-    def type_updater(self, match):
-        # type: (Match) -> str
+    def type_updater(self, match, node):
+        # type: (Match, Node) -> str
         # Replace `pkg.mod.SomeClass` with `SomeClass`
         # and remember to import it.
         word = match.group()
@@ -729,8 +747,7 @@ class BaseFixAnnotateFromSignature(BaseFixAnnotate):
             return word
         if '.' not in word and ':' not in word:
             # Assume it's either builtin or from `typing`
-            if word in typing_all:
-                self.add_import('typing', word)
+            self.touch_typing_import(word, node)
             return word
         # If there is a :, treat that as the separator between the
         # module and the class.  Otherwise assume everything but the
@@ -741,5 +758,14 @@ class BaseFixAnnotateFromSignature(BaseFixAnnotate):
         else:
             mod, name = word.rsplit('.', 1)
             to_import = name
+
+        # Get the typename we need to use to be valid for a current import statement
+        result = type_by_import_stmt(mod, to_import, node)
+
+        if result is not None:
+            # There exists a current import statement this type is valid for
+            return result
+
+        # There exists no import statement for this type, add one
         self.add_import(mod, to_import)
         return name
