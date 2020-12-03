@@ -160,6 +160,26 @@ To run the unit tests, use pytest:
 pytest
 ```
 
+We use [pre-commit](https://pre-commit.com/) to fixup code prior to committing
+or pushing.
+
+To set it up, `cd` to this repo and run:
+```
+pip install pre-commit
+pre-commit install
+```
+
+To manually run pre-commit on staged files:
+
+```
+pre-commit run
+```
+
+To manually run pre-commit on all files:
+```
+pre-commit run -a
+```
+
 ## Acknowledgments
 
 This project was forked from PyAnnotate, after some encouragement from

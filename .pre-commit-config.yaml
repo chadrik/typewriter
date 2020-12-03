@@ -16,3 +16,11 @@ repos:
   rev: 'v1.5.4'
   hooks:
   - id: autopep8
+
+- repo: https://github.com/pre-commit/mirrors-mypy
+  rev: 'v0.790'
+  hooks:
+  - id: mypy
+    entry: dmypy
+    args: ['run']
+    pass_filenames: false
