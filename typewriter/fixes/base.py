@@ -310,7 +310,7 @@ class BaseFixAnnotate(BaseFix):
             return
         argtypes, restype = annot
 
-        if self.options['typewriter']['annotation_style'] == 'py3':
+        if self.type_options['annotation_style'] == 'py3':
             self.add_py3_annot(argtypes, restype, node, results)
         else:
             self.add_py2_annot(argtypes, restype, node, results)
@@ -395,9 +395,10 @@ class BaseFixAnnotate(BaseFix):
         rpar.changed()
 
     def use_py2_long_form(self, argtypes, short_str, degen_str):
-        if self.options['typewriter']['comment_style'] == 'single':
+        # type: (List[str], str, str) -> bool
+        if self.type_options['comment_style'] == 'single':
             return False
-        elif self.options['typewriter']['comment_style'] == 'multi':
+        elif self.type_options['comment_style'] == 'multi':
             return False
         else:  # auto
             return ((len(short_str) > 64 or len(argtypes) > 5)
@@ -596,6 +597,7 @@ class BaseFixAnnotateFromSignature(BaseFixAnnotate):
 
     line_drift = 5
     needed_imports = None  # type: Optional[Set[Tuple[str, str]]]
+    _type_options = None  # type: Optional[Dict[str, Any]]
 
     @classmethod
     @contextmanager
@@ -606,6 +608,12 @@ class BaseFixAnnotateFromSignature(BaseFixAnnotate):
             yield
         finally:
             cls.line_drift = old_drift
+
+    @property
+    def type_options(self):
+        if self._type_options is None:
+            self._type_options = self.options.get('typewriter', {})
+        return self._type_options
 
     def add_import(self, mod, name):
         if mod == self.current_module():

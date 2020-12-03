@@ -17,7 +17,7 @@ class FixAnnotateCommand(BaseFixAnnotateFromSignature):
 
     def get_command(self, funcname, filename, lineno):
         # type: (str, str, int) -> List[str]
-        command = self.options['typewriter']['command']
+        command = self.type_options['command']
         return shlex.split(command.format(filename=filename, lineno=lineno,
                                           funcname=funcname))
 

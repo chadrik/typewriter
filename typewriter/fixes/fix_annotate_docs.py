@@ -116,7 +116,7 @@ class FixAnnotateDocs(BaseFixAnnotateFromSignature):
         -------
         str
         """
-        return self.options['typewriter']['doc_format']
+        return self.type_options['doc_format']
 
     def get_default_return_type(self):
         # type: () -> str
@@ -125,7 +125,7 @@ class FixAnnotateDocs(BaseFixAnnotateFromSignature):
         -------
         str
         """
-        return self.options['typewriter']['doc_default_return_type']
+        return self.type_options['doc_default_return_type']
 
     def parse_docstring(self, docstring, line):
         # type: (str, int) -> Tuple[Dict[str, str], Optional[str]]

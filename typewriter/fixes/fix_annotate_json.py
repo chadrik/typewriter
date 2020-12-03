@@ -36,8 +36,8 @@ class FixAnnotateJson(BaseFixAnnotateFromSignature):
 
     def get_types(self, node, results, funcname):
         # type: (Union[Leaf, Node], Dict[str, Any], str) -> Optional[Tuple[List[str], str]]
-        data = self.options['typewriter']['type_info']
-        top_dir = self.options['typewriter']['top_dir']
+        data = self.type_options['type_info']
+        top_dir = self.type_options['top_dir']
         # FIXME: this lookup code is inefficient and fragile.  We should restructure
         #  the json to be keyed by (funcname, rel path), and compute a rel path from self.filename.
         # We are using relative paths in the JSON.
