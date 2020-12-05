@@ -185,6 +185,13 @@ class BaseFixAnnotate(BaseFix):
 
     _maxfixes = os.getenv('MAXFIXES')
     counter = None if not _maxfixes else int(_maxfixes)
+    _type_options = None  # type: Optional[Dict[str, Any]]
+
+    @property
+    def type_options(self):
+        if self._type_options is None:
+            self._type_options = self.options.get('typewriter', {})
+        return self._type_options
 
     def should_skip(self, node, results):
         if BaseFixAnnotate.counter is not None:
@@ -597,7 +604,6 @@ class BaseFixAnnotateFromSignature(BaseFixAnnotate):
 
     line_drift = 5
     needed_imports = None  # type: Optional[Set[Tuple[str, str]]]
-    _type_options = None  # type: Optional[Dict[str, Any]]
 
     @classmethod
     @contextmanager
@@ -608,12 +614,6 @@ class BaseFixAnnotateFromSignature(BaseFixAnnotate):
             yield
         finally:
             cls.line_drift = old_drift
-
-    @property
-    def type_options(self):
-        if self._type_options is None:
-            self._type_options = self.options.get('typewriter', {})
-        return self._type_options
 
     def add_import(self, mod, name):
         if mod == self.current_module():
