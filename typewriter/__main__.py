@@ -170,7 +170,6 @@ def _main(args_override=None):
     logging.basicConfig(format='%(message)s', level=level)
 
     input_base_dir = crawl_up(os.path.abspath(args.files[0]))[0]
-
     if args.output_dir:
         input_base_dir = input_base_dir.rstrip(os.sep)
         logging.info('Output in %r will mirror the input directory %r layout.',
@@ -188,7 +187,6 @@ def _main(args_override=None):
         fixers.append(fixer_cls.__module__)
 
     options = {
-        'top_dir': input_base_dir,
         'annotation_style': annotation_style,
         'comment_style': args.py2_comment_style,
     }
@@ -212,6 +210,7 @@ def _main(args_override=None):
         # FIXME: in multi-process mode it may be faster to pass the json
         #  file name and re-read it, rather than copy the data into each process
         options['type_info'] = data
+        options['top_dir'] = input_base_dir
         add_fixer(FixAnnotateJson)
 
     if args.command:
