@@ -227,6 +227,150 @@ class AnnotateFromSignatureTestCase(FixerTestCase):
             """
         self.check(a, b)
 
+    def test_type_by_mod_import_as(self):
+        self.setTestData(
+            [{"func_name": "nop",
+              "path": "mod1.py",
+              "line": 1,
+              "signature": {
+                  "arg_types": ["mod1.MyClass"],
+                  "return_type": "mod2.AnotherClass"},
+              }])
+        a = """\
+            import mod2 as bar
+            def nop(foo):
+                return bar.AnotherClass()
+            class MyClass: pass
+            """
+        b = """\
+            import mod2 as bar
+            def nop(foo):
+                # type: (MyClass) -> bar.AnotherClass
+                return bar.AnotherClass()
+            class MyClass: pass
+            """
+        self.check(a, b)
+
+    def test_type_by_dotted_import_as(self):
+        self.setTestData(
+            [{"func_name": "nop",
+              "path": "mod1.py",
+              "line": 1,
+              "signature": {
+                  "arg_types": ["mod1.MyClass"],
+                  "return_type": "pkg.mod2.AnotherClass"},
+              }])
+        a = """\
+            import pkg.mod2.AnotherClass as bar
+            def nop(foo):
+                return bar()
+            class MyClass: pass
+            """
+        b = """\
+            import pkg.mod2.AnotherClass as bar
+            def nop(foo):
+                # type: (MyClass) -> bar
+                return bar()
+            class MyClass: pass
+            """
+        self.check(a, b)
+
+    def test_type_by_dotted_import_mod_as(self):
+        self.setTestData(
+            [{"func_name": "nop",
+              "path": "mod1.py",
+              "line": 1,
+              "signature": {
+                  "arg_types": ["mod1.MyClass"],
+                  "return_type": "pkg.mod2.AnotherClass"},
+              }])
+        a = """\
+            import pkg.mod2 as bar
+            def nop(foo):
+                return bar.AnotherClass()
+            class MyClass: pass
+            """
+        b = """\
+            import pkg.mod2 as bar
+            def nop(foo):
+                # type: (MyClass) -> bar.AnotherClass
+                return bar.AnotherClass()
+            class MyClass: pass
+            """
+        self.check(a, b)
+
+    def test_type_by_import_as(self):
+        self.setTestData(
+            [{"func_name": "nop",
+              "path": "mod1.py",
+              "line": 1,
+              "signature": {
+                  "arg_types": ["mod1.MyClass"],
+                  "return_type": "mod2.AnotherClass"},
+              }])
+        a = """\
+            from mod2 import AnotherClass as bar
+            def nop(foo):
+                return bar()
+            class MyClass: pass
+            """
+        b = """\
+            from mod2 import AnotherClass as bar
+            def nop(foo):
+                # type: (MyClass) -> bar
+                return bar()
+            class MyClass: pass
+            """
+        self.check(a, b)
+
+    def test_type_by_from_import_as_with_dotted_package(self):
+        self.setTestData(
+            [{"func_name": "nop",
+              "path": "mod1.py",
+              "line": 1,
+              "signature": {
+                  "arg_types": ["mod1.MyClass"],
+                  "return_type": "pkg.mod2.AnotherClass"},
+              }])
+        a = """\
+            from pkg.mod2 import AnotherClass as bar
+            def nop(foo):
+                return bar()
+            class MyClass: pass
+            """
+        b = """\
+            from pkg.mod2 import AnotherClass as bar
+            def nop(foo):
+                # type: (MyClass) -> bar
+                return bar()
+            class MyClass: pass
+            """
+        self.check(a, b)
+
+    def test_parentheses_import(self):
+        self.setTestData(
+            [{"func_name": "nop",
+              "path": "mod1.py",
+              "line": 1,
+              "signature": {
+                  "arg_types": ["mod2.MyClass"],
+                  "return_type": "mod2.AnotherClass"},
+              }])
+        a = """\
+            from mod2 import (AnotherClass, MyClass)
+            def nop(foo):
+                return AnotherClass()
+            class MyClass: pass
+            """
+        b = """\
+            from mod2 import (AnotherClass, MyClass)
+            def nop(foo):
+                # type: (MyClass) -> AnotherClass
+                return AnotherClass()
+            class MyClass: pass
+            """
+        self.check(a, b)
+
     def test_add_kwds(self):
         self.setTestData(
             [{"func_name": "nop",
