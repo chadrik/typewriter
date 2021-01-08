@@ -157,13 +157,15 @@ class FixAnnotateDocs(BaseFixAnnotateFromSignature):
         # Replace `pkg.mod.SomeClass` with `SomeClass`
         # and remember to import it.
         word = match.group()
-        # Assume it's either builtin or from `typing`
+        if does_tree_import(None, word, node):
+            # Check whether there already exists an import binding for this
+            return word
+        # If not, assume it's either builtin or from `typing`
         self.touch_typing_import(word, node)
         return word
 
     def make_annotation(self, node, results):
         # type: (Node, Dict[str, Any]) -> Optional[Tuple[List[str], str]]
-
         suite = results["suite"]
 
         docstring, line = get_docstring(suite)

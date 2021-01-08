@@ -49,7 +49,16 @@ class Test_get_import_info(TestCase):
                          ({"a.x": [('b', 'b')]}, "from a.x import b"),
                          ({"a.x": [('b', 'c')]}, "from a.x import b as c"),
                          ({"a": [('b', 'a.b')], "x": [('c', 'x.c')], "y": [('d', 'y.d')]},
-                          "import a.b, x.c, y.d"))
+                          "import a.b, x.c, y.d"),
+                         ({"typing": [('Any', 'Any'), ('Callable', 'Callable'),
+                                      ('Deque', 'Deque'), ('Generic', 'Generic'),
+                                      ('Iterable', 'Iterable'), ('Iterator', 'Iterator'),
+                                      ('List', 'List'), ('Optional', 'Optional'),
+                                      ('Tuple', 'Tuple'), ('TypeVar', 'TypeVar'),
+                                      ('Union', 'Union'), ('overload', 'overload')]},
+                          """from typing import (Any, Callable, Deque, Generic, Iterable, Iterator, List,
+                                                 Optional, Tuple, TypeVar, Union, overload)"""))
+
         for imports, stmt in passing_tests:
             print(stmt)
             n = self.get_import_info(stmt)

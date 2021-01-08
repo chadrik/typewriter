@@ -179,6 +179,29 @@ class AnnotateFromSignatureTestCase(FixerTestCase):
             """
         self.check(a, b)
 
+    def test_typing_import_parens(self):
+        self.setTestData(
+            [{"func_name": "nop",
+              "path": "<string>",
+              "line": 1,
+              # Check with and without 'typing.' prefix
+              "signature": {
+                  "arg_types": ["List[typing.AnyStr]", "Callable[[], int]"],
+                  "return_type": "object"},
+              }])
+        a = """\
+            from typing import (AnyStr, Callable, List)
+            def nop(foo, bar):
+                return 42
+            """
+        b = """\
+            from typing import (AnyStr, Callable, List)
+            def nop(foo, bar):
+                # type: (List[AnyStr], Callable[[], int]) -> object
+                return 42
+            """
+        self.check(a, b)
+
     def test_add_other_import(self):
         self.setTestData(
             [{"func_name": "nop",
@@ -357,13 +380,15 @@ class AnnotateFromSignatureTestCase(FixerTestCase):
                   "return_type": "mod2.AnotherClass"},
               }])
         a = """\
-            from mod2 import (AnotherClass, MyClass)
+            from mod2 import (AnotherClass,
+                              MyClass)
             def nop(foo):
                 return AnotherClass()
             class MyClass: pass
             """
         b = """\
-            from mod2 import (AnotherClass, MyClass)
+            from mod2 import (AnotherClass,
+                              MyClass)
             def nop(foo):
                 # type: (MyClass) -> AnotherClass
                 return AnotherClass()

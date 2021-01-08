@@ -1,12 +1,25 @@
 from __future__ import absolute_import, print_function
 
 import json
+import re
 import shlex
 import subprocess
 from lib2to3.pytree import Node
 from typing import Any, Dict, List, Optional, Tuple
 
 from .fix_annotate_json import BaseFixAnnotateFromSignature
+
+REG = re.compile(r'`-?\d+')
+
+
+def cleanup(s, node):
+    if s == 'Tuple[]':
+        # this gets generated for statements like `return ()`
+        # FIXME: touch_import('typing', 'Any')
+        return 'Tuple[Any, ...]'
+    else:
+        # fix 'T`1' -> 'T'
+        return REG.sub('', s)
 
 
 class FixAnnotateCommand(BaseFixAnnotateFromSignature):
@@ -41,4 +54,5 @@ class FixAnnotateCommand(BaseFixAnnotateFromSignature):
 
         data = json.loads(out)
         signature = data[0]['signature']
-        return signature['arg_types'], signature['return_type']
+        return [cleanup(arg, node) for arg in signature['arg_types']], \
+            cleanup(signature['return_type'], node)

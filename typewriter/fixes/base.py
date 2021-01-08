@@ -637,7 +637,8 @@ class BaseFixAnnotateFromSignature(BaseFixAnnotate):
         node : Node
         """
         if word in typing_all:
-            if not does_tree_import('typing', word, node):
+            if not type_by_import_stmt('typing', word, node):
+                # No import statement was found, should import
                 self.add_import('typing', word)
 
     def patch_imports(self, types, node):
@@ -740,8 +741,9 @@ class BaseFixAnnotateFromSignature(BaseFixAnnotate):
 
     def type_updater(self, match, node):
         # type: (Match, Node) -> str
-        # Replace `pkg.mod.SomeClass` with `SomeClass`
-        # and remember to import it.
+        # If import does not exist yet, replace `pkg.mod.SomeClass` with `SomeClass`
+        # and remember to import it. Otherwise replace `pkg.mod.SomeClass` with the name
+        # bound to its import
         word = match.group()
         if word == '...':
             return word
