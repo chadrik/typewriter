@@ -4,6 +4,7 @@ import inspect
 import logging
 import re
 from collections import OrderedDict
+from typing import Any, Iterable, List, Optional, Tuple, Type
 
 from typewriter.docs.parsers import Arg
 
