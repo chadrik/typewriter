@@ -212,13 +212,41 @@ class AnnotateFromSignatureTestCase(FixerTestCase):
                   "return_type": "mod3.AnotherClass"},
               }])
         a = """\
+            from mod3 import AnotherClass
             def nop(foo, bar):
                 return AnotherClass()
             class MyClass: pass
             """
         b = """\
-            from mod2 import OtherClass
             from mod3 import AnotherClass
+            import typing.TYPE_CHECKING
+            if typing.TYPE_CHECKING:
+                from mod2 import OtherClass
+            def nop(foo, bar):
+                # type: (MyClass, OtherClass) -> AnotherClass
+                return AnotherClass()
+            class MyClass: pass
+            """
+        self.check(a, b)
+
+    def test_add_other_import_safe(self):
+        self.setTestData(
+            [{"func_name": "nop",
+              "path": "mod1.py",
+              "line": 1,
+              "signature": {
+                  "arg_types": ["mod1.MyClass", "mod3.OtherClass"],
+                  "return_type": "mod3.AnotherClass"},
+              }])
+        a = """\
+            from mod3 import AnotherClass
+            def nop(foo, bar):
+                return AnotherClass()
+            class MyClass: pass
+            """
+        b = """\
+            from mod3 import AnotherClass
+            from mod3 import OtherClass
             def nop(foo, bar):
                 # type: (MyClass, OtherClass) -> AnotherClass
                 return AnotherClass()
@@ -389,6 +417,68 @@ class AnnotateFromSignatureTestCase(FixerTestCase):
         b = """\
             from mod2 import (AnotherClass,
                               MyClass)
+            def nop(foo):
+                # type: (MyClass) -> AnotherClass
+                return AnotherClass()
+            class MyClass: pass
+            """
+        self.check(a, b)
+
+    def test_type_checking_import(self):
+        self.setTestData(
+            [{"func_name": "nop",
+              "path": "mod1.py",
+              "line": 1,
+              "signature": {
+                  "arg_types": ["mod2.MyClass"],
+                  "return_type": "mod3.AnotherClass"},
+              }])
+        a = """\
+            from mod3 import AnotherClass
+            import typing.TYPE_CHECKING
+            if typing.TYPE_CHECKING:
+                import X
+            def nop(foo):
+                return AnotherClass()
+            class MyClass: pass
+            """
+        b = """\
+            from mod3 import AnotherClass
+            import typing.TYPE_CHECKING
+            if typing.TYPE_CHECKING:
+                import X
+                from mod2 import MyClass
+            def nop(foo):
+                # type: (MyClass) -> AnotherClass
+                return AnotherClass()
+            class MyClass: pass
+            """
+        self.check(a, b)
+
+    def test_type_checking_from_import(self):
+        self.setTestData(
+            [{"func_name": "nop",
+              "path": "mod1.py",
+              "line": 1,
+              "signature": {
+                  "arg_types": ["mod2.MyClass"],
+                  "return_type": "mod3.AnotherClass"},
+              }])
+        a = """\
+            from mod3 import AnotherClass
+            from typing import TYPE_CHECKING
+            if TYPE_CHECKING:
+                import X
+            def nop(foo):
+                return AnotherClass()
+            class MyClass: pass
+            """
+        b = """\
+            from mod3 import AnotherClass
+            from typing import TYPE_CHECKING
+            if TYPE_CHECKING:
+                import X
+                from mod2 import MyClass
             def nop(foo):
                 # type: (MyClass) -> AnotherClass
                 return AnotherClass()
@@ -973,7 +1063,9 @@ class AnnotateFromSignatureTestCase(FixerTestCase):
                 pass
             """
         b = """\
-            from foo import A
+            import typing.TYPE_CHECKING
+            if typing.TYPE_CHECKING:
+                from foo import A
             def nop(a):
                 # type: (A.B) -> None
                 pass

@@ -1,7 +1,9 @@
 """Main entry point to mypy annotation inference utility."""
 
 import json
-from typing import List, TypedDict
+from typing import List
+
+from typing_extensions import TypedDict
 
 from typewriter.annotations.infer import infer_annotation
 from typewriter.annotations.parse import parse_json

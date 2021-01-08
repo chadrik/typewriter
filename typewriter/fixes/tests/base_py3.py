@@ -103,8 +103,10 @@ class AnnotateFromSignatureTestCase(FixerTestCase):
             class MyClass: pass
             """
         b = """\
-            from mod2 import OtherClass
-            from mod3 import AnotherClass
+            import typing.TYPE_CHECKING
+            if typing.TYPE_CHECKING:
+                from mod2 import OtherClass
+                from mod3 import AnotherClass
             def nop(foo: MyClass, bar: OtherClass) -> AnotherClass:
                 return AnotherClass()
             class MyClass: pass

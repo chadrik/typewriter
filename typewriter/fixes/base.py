@@ -45,7 +45,10 @@ from typing import (Any, Dict, Iterator, List, Match, Optional, Set, Text,
                     Tuple, Union)
 from typing import __all__ as typing_all  # type: ignore
 
-from typewriter.fixes.fixer_utils import create_import, type_by_import_stmt
+from typewriter.fixes.fixer_utils import (create_import,
+                                          create_type_checking_import,
+                                          get_unprotected_imports,
+                                          type_by_import_stmt)
 
 # Taken from mypy codebase:
 # https://github.com/python/mypy/blob/745d300b8304c3dcf601477762bf9d70b9a4619c/mypy/main.py#L503
@@ -606,7 +609,13 @@ class BaseFixAnnotate(BaseFix):
 class BaseFixAnnotateFromSignature(BaseFixAnnotate):
 
     line_drift = 5
-    needed_imports = None  # type: Optional[Set[Tuple[str, str]]]
+    safe_imports = set(['typing'])
+
+    def __init__(self, options, log):
+        super(BaseFixAnnotateFromSignature, self).__init__(options, log)
+
+        self.needed_imports = set()  # type: Set[Tuple[str, str]]
+        self.needed_type_checking_imports = set()  # type: Set[Tuple[str, str]]
 
     @classmethod
     @contextmanager
@@ -618,11 +627,21 @@ class BaseFixAnnotateFromSignature(BaseFixAnnotate):
         finally:
             cls.line_drift = old_drift
 
-    def add_import(self, mod, name):
+    def add_import(self, mod, name, in_type_checking=False):
+        """
+        Adds potential import according to the 'in_type_checking' flag. If true, and if the potential
+        import is not in safe_imports, then we assume this potential import is liable to cause an
+        import cycle and should therefore be added under a TYPE_CHECKING block. If false, we just
+        assume that isn't a concern and we add the import to the top level of the file.
+        """
         if mod == self.current_module():
             return
-        if self.needed_imports is None:
-            self.needed_imports = set()
+
+        if in_type_checking and mod not in self.safe_imports:
+            # Pass to the type checking queue
+            self.needed_type_checking_imports.add((mod, name))
+            return
+
         self.needed_imports.add((mod, name))
 
     def touch_typing_import(self, word, node):
@@ -645,7 +664,11 @@ class BaseFixAnnotateFromSignature(BaseFixAnnotate):
         if self.needed_imports:
             for mod, name in sorted(self.needed_imports):
                 create_import(mod, name, node)
-        self.needed_imports = None
+        if self.needed_type_checking_imports:
+            for mod, name in sorted(self.needed_type_checking_imports):
+                create_type_checking_import(mod, name, node)
+        self.needed_imports.clear()
+        self.needed_type_checking_imports.clear()
 
     def set_filename(self, filename):
         super(BaseFixAnnotateFromSignature, self).set_filename(filename)
@@ -766,8 +789,17 @@ class BaseFixAnnotateFromSignature(BaseFixAnnotate):
 
         if result is not None:
             # There exists a current import statement this type is valid for
+            # We know this module has already been imported
             return result
 
+        in_type_checking = True
+        # Get a list of cached imports from this node's root
+        unprotected_imports = get_unprotected_imports(node)
+        if mod in unprotected_imports:
+            # If this mod was already imported in the original file, its safe to import from again
+            in_type_checking = False
+
         # There exists no import statement for this type, add one
-        self.add_import(mod, to_import)
+        self.add_import(mod, to_import, in_type_checking=in_type_checking)
+
         return name
