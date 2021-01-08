@@ -126,3 +126,55 @@ class Test_find_import_info(TestCase):
         self.assertTrue(res.package == package)
         self.assertTrue(res.entry == name)
         self.assertTrue(res.binding == binding)
+
+
+class Test_create_type_checking_import(TestCase):
+    def create_type_checking_import(self, package, name, string):
+        node = parse(string)
+        fixer_utils.create_type_checking_import(package, name, node)
+        return node
+
+    def test(self):
+        string = """
+        import a
+        import b.a as c
+        import c.d as e
+        from X import Y
+
+        import Z as W
+
+        import typing.TYPE_CHECKING
+        if typing.TYPE_CHECKING:
+            from bar import R
+            from bar import S
+            from bar import T
+
+        import mod as bar
+        import foo
+        from foo.mod2 import MyClass
+        """
+
+        ref = """
+        import a
+        import b.a as c
+        import c.d as e
+        from X import Y
+
+        import Z as W
+
+        import typing.TYPE_CHECKING
+        if typing.TYPE_CHECKING:
+            from bar import R
+            from bar import S
+            from bar import T
+            from bar import TestImport
+
+        import mod as bar
+        import foo
+        from foo.mod2 import MyClass
+        """
+        ref = parse(ref)
+
+        res = self.create_type_checking_import("bar", "TestImport", string)
+        self.assertTrue(res)
+        self.assertTrue(res == ref)

@@ -2,11 +2,102 @@
 Typewriter specific fixer utility functions
 """
 
-from functools import cache
 from lib2to3.fixer_util import (FromImport, Leaf, Newline, Node,
                                 does_tree_import, find_root, is_import,
                                 make_suite, syms, token)
-from typing import Dict, NamedTuple, Optional, Set, Union
+from lib2to3.pytree import Base
+from typing import (TYPE_CHECKING, Any, Callable, Dict, Generator, NamedTuple,
+                    Optional, Set, Tuple, Union)
+
+from kids.cache import cache
+
+# ------------- caching helpers --------------- #
+
+
+class HashableNode(object):
+    """
+    Hashable wrapper for node and leaf objects in order to cache
+    """
+
+    def __init__(self, node):
+        # type: (Union[Node, Leaf]) -> None
+        """
+        Parameters
+        -----------
+        node : Union[Node, Leaf]
+        """
+        self.node = node
+
+    def __hash__(self):
+        return hash((self.node.get_lineno(),
+                     self.node.depth(),
+                     self.node.__str__()))
+
+
+def wrap_cachable(func):
+    """
+    Converts the CST node objects of a function into HashableNodes to allow the decorated
+    function to be cached (provided that all other arguments are hashable).
+    """
+    def inner(*args, **kwargs):
+        args, kwargs = _transform_by_type(HashableNode, Base,
+                                          *args, **kwargs)
+
+        return func(*args, **kwargs)
+    return inner
+
+
+def unwrap_cachable(func):
+    """
+    Converts any HashableNodes in the argument list of a function into their standard node
+    counterparts.
+    """
+    def inner(*args, **kwargs):
+        args, kwargs = _transform_by_type(lambda hashable: hashable.node, HashableNode,
+                                          *args, **kwargs)
+
+        return func(*args, **kwargs)
+    return inner
+
+
+def node_cache(func):
+    """
+    Catch-all decorator to handle caching nodes of the CST
+    """
+    return wrap_cachable(cache(unwrap_cachable(func)))
+
+
+# ------------------ other decorators ------------------ #
+
+
+def force_root_args(func):
+    """
+    Given any function with a node argument, this decorator converts the node into its root parent.
+    If a function has this decorator, all nodes with the same root will be treated the same.
+
+    In our codebase, we often have a singular node available, but want to access the root of that
+    node in some function. If we want to cache such a function, we must convert the node into root
+    before we cache rather than within the function. This is the motivation behind this decorator.
+    """
+    def inner(*args, **kwargs):
+        args, kwargs = _transform_by_type(find_root, Base,
+                                          *args, **kwargs)
+
+        return func(*args, **kwargs)
+    return inner
+
+
+def _transform_by_type(transformer, type, *args, **kwargs):
+    """
+    Convenience function for our decorators
+    """
+    new_args = (transformer(arg) if isinstance(arg, type) else arg for arg in args)
+    new_kwargs = {k: transformer(v) if isinstance(v, type) else v for k, v in kwargs}
+
+    return new_args, new_kwargs
+
+
+# ------------------- utils ---------------------- #
 
 
 def type_by_import_stmt(package, name, node):
@@ -53,25 +144,55 @@ def type_by_import_stmt(package, name, node):
     return None
 
 
-def create_import(package, name, node):
-    # type: (str, str, Node) -> None
+def is_import_stmt(node):
+    return (node.type == syms.simple_stmt and node.children and
+            is_import(node.children[0]))
+
+
+def _generate_import_node(package, name, prefix=""):
+
+    def DottedName(name, prefix=""):
+        split = name.rsplit('.')
+        if len(split) > 1:
+            # Reconstruct the dotted name as a list of leaves
+            leftmost_name = Leaf(token.NAME, split[0])
+            children = [leftmost_name]
+            for entry in split[1:]:
+                next_name = [Leaf(token.DOT, '.'), Leaf(token.NAME, entry)]
+                children.extend(next_name)
+            return Node(syms.dotted_name, children, prefix=prefix)
+        return Leaf(token.NAME, name, prefix=prefix)
+
+    if not package:
+        import_ = Node(syms.import_name, [
+            Leaf(token.NAME, "import", prefix=prefix),
+            DottedName(name, prefix=" ")
+        ])
+    else:
+        import_ = Node(syms.import_from, [
+            Leaf(token.NAME, "from", prefix=prefix),
+            DottedName(package, prefix=" "),
+            Leaf(token.NAME, "import", prefix=" "),
+            Leaf(token.NAME, name, prefix=" "),
+        ])
+
+    return import_
+
+
+def _get_bottom_of_imports(root):
+    # type: (Node) -> int
     """
-    Create import statement of the form `from <package> import <name>`
+    Returns the bottom of global import block if there is one. If there is none it returns the
+    bottom of the file docstring. If there is no docstring it returns the top of the file.
 
     Parameters
-    -------------
-    package : str
-    name : str
-        Name of type being imported
-    node : Node
+    -----------
+    root : Node
+
+    Return
+    -----------
+    int
     """
-
-    def is_import_stmt(node):
-        return (node.type == syms.simple_stmt and node.children and
-                is_import(node.children[0]))
-
-    root = find_root(node)
-
     # figure out where to insert the new import.  First try to find
     # the first import and then skip to the last one.
     insert_pos = offset = 0
@@ -93,16 +214,138 @@ def create_import(package, name, node):
                 insert_pos = idx + 1
                 break
 
-    if package is None:
-        import_ = Node(syms.import_name, [
-            Leaf(token.NAME, "import"),
-            Leaf(token.NAME, name, prefix=" ")
-        ])
-    else:
-        import_ = FromImport(package, [Leaf(token.NAME, name, prefix=" ")])
+    return insert_pos
+
+
+def create_import(package, name, node):
+    # type: (str, str, Node) -> None
+    """
+    Create import statement of the form `from <package> import <name>`
+
+    Parameters
+    -------------
+    package : str
+    name : str
+        Name of type being imported
+    node : Node
+    """
+
+    root = find_root(node)
+
+    insert_pos = _get_bottom_of_imports(root)
+
+    import_ = _generate_import_node(package, name)
 
     children = [import_, Newline()]
     root.insert_child(insert_pos, Node(syms.simple_stmt, children))
+
+
+# -------------- TYPE_CHECKING LOGIC ------------------ #
+
+
+def _new_type_check_with_import(package, name, root, insert_pos):
+    # type: (Optional[str], str, Node, int) -> None
+    """
+    Inserts a new TYPE_CHECKING block containing a new import statement for package and name
+
+    Parameters
+    -----------
+    package : Optional[str]
+    name : str
+    root : Node
+    insert_pos : int
+    """
+    # [Grammar]
+    # if_stmt: 'if' namedexpr_test ':' suite ('elif' namedexpr_test ':' suite)* ['else' ':' suite]
+    type_check_node = Node(syms.if_stmt,
+                           [Leaf(token.NAME, 'if'),
+                            Node(syms.power, [Leaf(token.NAME, 'typing'),
+                                              Node(syms.trailer, [Leaf(token.DOT, '.'),
+                                                                  Leaf(token.NAME, 'TYPE_CHECKING')])],
+                                 prefix=" "),
+                            Leaf(token.COLON, ':'),
+                            # [Grammar]
+                            # suite: simple_stmt | NEWLINE INDENT stmt+ DEDENT
+                            Node(syms.suite, [Leaf(token.NEWLINE, '\n'),
+                                              Leaf(token.INDENT, '    '),
+                                              Node(syms.simple_stmt,
+                                                   [_generate_import_node(package, name), Newline()]),
+                                              Leaf(token.DEDENT, '')])])
+
+    # We can just hardcode the correct insert position since we just created the typing block
+    root.insert_child(insert_pos, type_check_node)
+    # Make sure to import typing.TYPE_CHECKING just before using
+    import_type_checking = [_generate_import_node(None, 'typing.TYPE_CHECKING'), Newline()]
+    root.insert_child(insert_pos, Node(syms.simple_stmt, import_type_checking))
+
+
+def create_type_checking_import(package, name, node):
+    # type: (str, str, Node) -> None
+    """
+    Create import statement of the form `from <package> import <name>` within a TYPING_CHECK
+    block
+
+    Parameters
+    -------------
+    package : str
+    name : str
+        Name of type being imported
+    node : Node
+    """
+
+    def is_type_checking_decl(node):
+        # [Grammar]
+        # if_stmt: 'if' namedexpr_test ':' suite ('elif' namedexpr_test ':' suite)* ['else' ':' suite]
+        if not node.type == syms.if_stmt:
+            return False
+        stmt = str(node.children[1]).strip()
+        if stmt in ('typing.TYPE_CHECKING', 'TYPE_CHECKING'):
+            return True
+
+        return False
+
+    root = find_root(node)
+
+    # figure out where to insert the new import.  First try to find
+    # the first import and then skip to the last one.
+    type_checking_suite = None
+    parent = root
+    for idx, node in enumerate(root.children):
+        if not is_type_checking_decl(node):
+            continue
+
+        type_checking_suite = node.children[3]
+        parent = type_checking_suite
+        insert_pos = len(type_checking_suite.children) - 1
+        break
+
+    if type_checking_suite is None:
+        # Generate a new TYPE_CHECKING block at the bottom of the current import block and return
+        insert_pos = _get_bottom_of_imports(root)
+        _new_type_check_with_import(package, name, root, insert_pos)
+        return
+
+    import_ = _generate_import_node(package, name, prefix="    ")
+    children = [import_, Newline()]
+
+    parent.insert_child(insert_pos, Node(syms.simple_stmt, children))
+
+
+@force_root_args
+@node_cache
+def get_unprotected_imports(root):
+    """
+    Returns all imports of a syntax tree at the global level. So any imports inside a TYPE_CHECKING
+    block or defined inside of a method or class are not included. Intended to be used once, before
+    any editing of the tree, so we can cache for efficiency.
+    """
+    imports = set([])  # type: Set[str]
+    for child in root.children:
+        if is_import_stmt(child):
+            ret = get_import_info(child.children[0])
+            imports = set(ret.imports.keys())
+
+    return imports
 
 
 def touch_import(package, name, node):
@@ -243,41 +486,10 @@ def decompose_name(node):
     return None, None, None
 
 
+@node_cache
 def get_import_info(node):
+    # type: (Node) -> ImportNodeInfo
     """
-    Wraps the cachable get_import_info in order to convert the node into a hashable node before
-    attempting to cache
-    """
-    node = HashableNode(node)
-    return _get_import_info_cachable(node)
-
-
-class HashableNode(object):
-    """
-    Hashable wrapper for node and leaf objects in order to cache
-    """
-
-    def __init__(self, node):
-        # type: (Union[Node, Leaf]) -> None
-        """
-        Parameters
-        -----------
-        node : Union[Node, Leaf]
-        """
-        self.node = node
-
-    def __hash__(self):
-        return hash((self.node.get_lineno(),
-                     self.node.depth(),
-                     self.node.__str__()))
-
-
-@cache
-def _get_import_info_cachable(hashable_node):
-    # type: (HashableNode) -> ImportNodeInfo
-    """
-    We cache using hashable_node as a key and analyze hashable_node.node
-
     If node is a valid import_stmt, this will return a named tuple for each component of the
     statement
         ex: from a.b import c as d, e  => (imports={'a.b': [(import_name='c',
@@ -292,15 +504,12 @@ def _get_import_info_cachable(hashable_node):
 
     Parameters
     -----------
-    hashable_node : HashableNode
+    node : Node
 
     Return
     -----------
     ImportNodeInfo
     """
-    # Get the node from the hashable_node wrapper
-    node = hashable_node.node
-
     def handle_name(node):
         if node.type in (syms.dotted_as_name, syms.import_as_name):
             # [Grammar] dotted_as_name: dotted_name ['as' NAME]
