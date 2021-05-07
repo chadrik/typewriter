@@ -10,3 +10,4 @@ __pycache__
 .tox
 /.idea
 .dmypy.json
+/venv/

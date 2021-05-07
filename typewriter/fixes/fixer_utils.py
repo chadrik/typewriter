@@ -259,10 +259,7 @@ def _new_type_check_with_import(package, name, root, insert_pos):
     # if_stmt: 'if' namedexpr_test ':' suite ('elif' namedexpr_test ':' suite)* ['else' ':' suite]
     type_check_node = Node(syms.if_stmt,
                            [Leaf(token.NAME, 'if'),
-                            Node(syms.power, [Leaf(token.NAME, 'typing'),
-                                              Node(syms.trailer, [Leaf(token.DOT, '.'),
-                                                                  Leaf(token.NAME, 'TYPE_CHECKING')])],
-                                 prefix=" "),
+                            Leaf(token.NAME, 'TYPE_CHECKING', prefix=" "),
                             Leaf(token.COLON, ':'),
                             # [Grammar]
                             # suite: simple_stmt | NEWLINE INDENT stmt+ DEDENT
@@ -274,8 +271,8 @@ def _new_type_check_with_import(package, name, root, insert_pos):
 
     # We can just hardcode the correct insert position since we just created the typing block
     root.insert_child(insert_pos, type_check_node)
-    # Make sure to import typing.TYPE_CHECKING just before using
-    import_type_checking = [_generate_import_node(None, 'typing.TYPE_CHECKING'), Newline()]
+    # Make sure to import TYPE_CHECKING just before using
+    import_type_checking = [_generate_import_node('typing', 'TYPE_CHECKING'), Newline()]
     root.insert_child(insert_pos, Node(syms.simple_stmt, import_type_checking))
 
 

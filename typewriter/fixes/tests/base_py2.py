@@ -219,8 +219,8 @@ class AnnotateFromSignatureTestCase(FixerTestCase):
             """
         b = """\
             from mod3 import AnotherClass
-            import typing.TYPE_CHECKING
-            if typing.TYPE_CHECKING:
+            from typing import TYPE_CHECKING
+            if TYPE_CHECKING:
                 from mod2 import OtherClass
             def nop(foo, bar):
                 # type: (MyClass, OtherClass) -> AnotherClass
@@ -435,8 +435,8 @@ class AnnotateFromSignatureTestCase(FixerTestCase):
               }])
         a = """\
             from mod3 import AnotherClass
-            import typing.TYPE_CHECKING
-            if typing.TYPE_CHECKING:
+            from typing import TYPE_CHECKING
+            if TYPE_CHECKING:
                 import X
             def nop(foo):
                 return AnotherClass()
@@ -444,8 +444,8 @@ class AnnotateFromSignatureTestCase(FixerTestCase):
             """
         b = """\
             from mod3 import AnotherClass
-            import typing.TYPE_CHECKING
-            if typing.TYPE_CHECKING:
+            from typing import TYPE_CHECKING
+            if TYPE_CHECKING:
                 import X
                 from mod2 import MyClass
             def nop(foo):
@@ -1063,8 +1063,8 @@ class AnnotateFromSignatureTestCase(FixerTestCase):
                 pass
             """
         b = """\
-            import typing.TYPE_CHECKING
-            if typing.TYPE_CHECKING:
+            from typing import TYPE_CHECKING
+            if TYPE_CHECKING:
                 from foo import A
             def nop(a):
                 # type: (A.B) -> None
