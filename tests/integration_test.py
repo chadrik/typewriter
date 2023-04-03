@@ -60,7 +60,7 @@ class IntegrationTest(unittest.TestCase):
     #         f.write(driver)
     #     subprocess.check_call([sys.executable, 'driver.py'])
     #     output = subprocess.check_output([sys.executable, '-m',
-    #                                       'typewriter',
+    #                                       'typeright',
     #                                       '--type-info=type_info.json',
     #                                       '--annotation-style=py2',
     #                                       'gcd.py'])
@@ -72,7 +72,7 @@ class IntegrationTest(unittest.TestCase):
         with open('gcd.py', 'w') as f:
             f.write(example)
         output = subprocess.check_output([sys.executable, '-m',
-                                          'typewriter',
+                                          'typeright',
                                           '--annotation-style=py2',
                                           '-a', 'gcd.py'])
         lines = output.splitlines()
@@ -84,7 +84,7 @@ class IntegrationTest(unittest.TestCase):
             f.write(example)
         try:
             subprocess.check_output([sys.executable, '-m',
-                                     'typewriter',
+                                     'typeright',
                                      'gcd.py',
                                      '--type-info=type_info.json',
                                      '--annotation-style=py2'],
@@ -107,7 +107,7 @@ class IntegrationTest(unittest.TestCase):
     #         f.write(driver)
     #     subprocess.check_call([sys.executable, 'driver.py'])
     #     output = subprocess.check_output([sys.executable, '-m',
-    #                                       'typewriter',
+    #                                       'typeright',
     #                                       '--type-info=type_info.json',
     #                                       '--annotation-style=py2',
     #                                       'foo/gcd.py'])
@@ -126,7 +126,7 @@ class IntegrationTest(unittest.TestCase):
     #         f.write(driver)
     #     subprocess.check_call([sys.executable, 'driver.py'])
     #     output = subprocess.check_output([sys.executable, '-m',
-    #                                       'typewriter',
+    #                                       'typeright',
     #                                       '--type-info=type_info.json',
     #                                       '--annotation-style=py2',
     #                                       # Construct platform-correct pathname:
@@ -146,7 +146,7 @@ class IntegrationTest(unittest.TestCase):
     #         f.write(driver)
     #     subprocess.check_call([sys.executable, 'driver.py'])
     #     output = subprocess.check_output([sys.executable, '-m',
-    #                                       'typewriter',
+    #                                       'typeright',
     #                                       '--type-info=type_info.json',
     #                                       '--annotation-style=py2',
     #                                       # Construct platform-correct pathname:

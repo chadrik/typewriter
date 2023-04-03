@@ -3,9 +3,9 @@ import tempfile
 import unittest
 from typing import List, Optional, Tuple
 
-from typewriter.annotations.parse import (ParseError, parse_json,
+from typeright.annotations.parse import (ParseError, parse_json,
                                           parse_type_comment, tokenize)
-from typewriter.annotations.types import (ARG_POS, ARG_STAR, ARG_STARSTAR,
+from typeright.annotations.types import (ARG_POS, ARG_STAR, ARG_STARSTAR,
                                           AbstractType, AnyType, Argument,
                                           ClassType, NoReturnType, TupleType,
                                           UnionType)

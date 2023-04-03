@@ -11,7 +11,7 @@ into a type annoted version:
 	      # type: (Any, int) -> Any            # noqa: F821
 	      return bar + baz
 
-or (when setting options['typewriter']['annotation_style'] to 'py3'):
+or (when setting options['typeright']['annotation_style'] to 'py3'):
 
 	  def foo(self, bar : Any, baz : int = 12) -> Any:
 	      return bar + baz
@@ -45,7 +45,7 @@ from typing import (Any, Dict, Iterator, List, Match, Optional, Set, Text,
                     Tuple, Union)
 from typing import __all__ as typing_all  # type: ignore
 
-from typewriter.fixes.fixer_utils import (create_import,
+from typeright.fixes.fixer_utils import (create_import,
                                           create_type_checking_import,
                                           get_unprotected_imports,
                                           type_by_import_stmt)
@@ -196,7 +196,7 @@ class BaseFixAnnotate(BaseFix):
     @property
     def type_options(self):
         if self._type_options is None:
-            self._type_options = self.options.get('typewriter', {})
+            self._type_options = self.options.get('typeright', {})
         return self._type_options
 
     def should_skip(self, node, results):

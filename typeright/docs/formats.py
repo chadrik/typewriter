@@ -6,7 +6,7 @@ import re
 from collections import OrderedDict
 from typing import Any, Iterable, List, Optional, Tuple, Type
 
-from typewriter.docs.parsers import Arg
+from typeright.docs.parsers import Arg
 
 if False:
     from typing import *
@@ -239,7 +239,7 @@ class RestFormat(DocstringFormat):
 
     @property
     def parser_class(self):
-        from typewriter.docs.parsers.rest import RestDocstring
+        from typeright.docs.parsers.rest import RestDocstring
         return RestDocstring
 
     def _parse(self, docstring):
@@ -256,7 +256,7 @@ class NumpyFormat(DocstringFormat):
 
     @property
     def parser_class(self):
-        from typewriter.docs.parsers.other import NumpyDocstring
+        from typeright.docs.parsers.other import NumpyDocstring
         return NumpyDocstring
 
     def _parse(self, docstring):
@@ -273,7 +273,7 @@ class GoogleFormat(DocstringFormat):
 
     @property
     def parser_class(self):
-        from typewriter.docs.parsers.other import GoogleDocstring
+        from typeright.docs.parsers.other import GoogleDocstring
         return GoogleDocstring
 
     def _parse(self, docstring):

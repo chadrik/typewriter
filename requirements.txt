@@ -1,8 +1,0 @@
-mypy_extensions>=0.3.0
-pytest>=3.3.0
-setuptools>=28.8.0
-six>=1.11.0
-kids.cache>=0.0.7
-typing-extensions>=3.7.4.3
-typing>=3.6.2; python_version < '3.5'
-mock>=4.0.2; python_version < '3.3'

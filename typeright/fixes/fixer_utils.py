@@ -1,5 +1,5 @@
 """
-Typewriter specific fixer utility functions
+typeright specific fixer utility functions
 """
 
 from lib2to3.fixer_util import (FromImport, Leaf, Newline, Node,

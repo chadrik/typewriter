@@ -8,11 +8,11 @@ repos:
 
 - repo: local
   hooks:
-  - id: typewriter
+  - id: typeright
     name: Fix Types
     language: system
     entry: python
-    args: ['-m', 'typewriter']
+    args: ['-m', 'typeright']
     types: [python]
     exclude: &exclude "tests/fixtures/.*"
 

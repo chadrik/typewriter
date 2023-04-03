@@ -1,10 +1,10 @@
-# TypeWriter: Generate Python Type Annotations
+# typeright: Generate Python Type Annotations
 
 Insert PEP 484 type annotations into your python source code.
 
 ## Options
 
-TypeWriter currently supports 4 approaches (aka "fixers") for inserting
+typeright currently supports 4 approaches (aka "fixers") for inserting
 annotations, listed below.
 
 Multiple fixers can be used in tandem: if an annotation exists, or is
@@ -28,7 +28,7 @@ json file options:
 ```
 
 If you have a tool that is able to generate type information, you can output
-it in a format compatible with TypeWriter and it will insert them as annotations.
+it in a format compatible with typeright and it will insert them as annotations.
 The most common case for this would be if you're using
 [PyAnnotate](https://github.com/dropbox/pyannotate) to inspect types at
 runtime (this project is itself a fork of PyAnnotate, focused solely on annotation
@@ -57,10 +57,10 @@ To use this, first start the mypy daemon:
 dmypy run
 ```
 
-Next, invoke `typewriter` and pass it the command to run:
+Next, invoke `typeright` and pass it the command to run:
 
 ```
-typewriter --command='dmypy suggest --json {filename}:{lineno}' path/
+typeright --command='dmypy suggest --json {filename}:{lineno}' path/
 ```
 
 It will run the given command on any function in `path/` that does not have annotations.
@@ -84,7 +84,7 @@ Maintaining types in docstrings can be desirable for a few reasons:
 - You find it easier to maintain and comprehend types specified alongside the
   description of an argument
 
-TypeWriter can parse the three major docstring conventions to find type info: [numpy](http://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_numpy.html#example-numpy), [google](http://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html) and [restructuredText](https://thomas-cokelaer.info/tutorials/sphinx/docstring_python.html#template-py-source-file)
+typeright can parse the three major docstring conventions to find type info: [numpy](http://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_numpy.html#example-numpy), [google](http://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html) and [restructuredText](https://thomas-cokelaer.info/tutorials/sphinx/docstring_python.html#template-py-source-file)
 
 Regardless of the docstring convention you choose, the types declared within your
 docstrings should following the guidelines in [PEP 484](https://www.python.org/dev/peps/pep-0484/),
@@ -104,6 +104,8 @@ any options:
 ```
 
 ### Output format options
+
+There are options to control how to generate the type annotations:
 
 ```
 output format options:
@@ -130,14 +132,14 @@ other options:
 
 ## Configuration
 
-TypeWriter will read defaults from a configuration file named `typewriter.ini`,
+typeright will read defaults from a configuration file named `typeright.ini`,
 or `setup.cfg` in the current directory.
 
 For example:
 
 ```ini
-[typewriter]
-files = typewriter
+[typeright]
+files = typeright
 
 command = dmypy suggest --json --no-any {filename}:{lineno}
 docstring_format = numpy
@@ -149,16 +151,10 @@ write = true
 This should work for Python 2.7 as well as for Python 3.6 and higher.
 
 ```
-pip install typewriter
+pip install typeright
 ```
 
-## Testing etc.
-
-To run the unit tests, use pytest:
-
-```
-pytest
-```
+## Using as a pre-commit hook
 
 We use [pre-commit](https://pre-commit.com/) to fixup code prior to committing
 or pushing.
@@ -178,6 +174,14 @@ pre-commit run
 To manually run pre-commit on all files:
 ```
 pre-commit run -a
+```
+
+## Testing
+
+To run the unit tests, use pytest:
+
+```
+pytest
 ```
 
 ## Acknowledgments

@@ -36,7 +36,7 @@ from typing import (Any, Callable, Deque, Generic, Iterable, Iterator, List,
 
 from six import string_types
 
-from typewriter.docs.parsers import Arg
+from typeright.docs.parsers import Arg
 
 T = TypeVar('T')
 

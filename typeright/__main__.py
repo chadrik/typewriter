@@ -12,15 +12,15 @@ from typing import Any, Dict, List, Optional
 
 import six.moves.configparser as configparser
 
-from typewriter.annotations.main import generate_annotations_json_string
-from typewriter.docs import formats
-from typewriter.fixes.base import BaseFixAnnotateFromSignature, crawl_up
-from typewriter.fixes.fix_annotate_any import FixAnnotateAny
-from typewriter.fixes.fix_annotate_command import FixAnnotateCommand
-from typewriter.fixes.fix_annotate_docs import FixAnnotateDocs
-from typewriter.fixes.fix_annotate_json import FixAnnotateJson
+from typeright.annotations.main import generate_annotations_json_string
+from typeright.docs import formats
+from typeright.fixes.base import BaseFixAnnotateFromSignature, crawl_up
+from typeright.fixes.fix_annotate_any import FixAnnotateAny
+from typeright.fixes.fix_annotate_command import FixAnnotateCommand
+from typeright.fixes.fix_annotate_docs import FixAnnotateDocs
+from typeright.fixes.fix_annotate_json import FixAnnotateJson
 
-NAME = 'typewriter'
+NAME = 'typeright'
 CONFIG_FILES = [NAME + '.ini', 'setup.cfg']
 
 
@@ -228,7 +228,7 @@ def _main(args_override=None):
     flags = {
         'write_unchanged_files': args.write_unchanged_files,
         'print_function': args.print_function,
-        'typewriter': options,
+        'typeright': options,
     }
     rt = StdoutRefactoringTool(
         fixers=fixers,

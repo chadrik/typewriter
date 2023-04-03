@@ -5,9 +5,9 @@ from typing import List
 
 from typing_extensions import TypedDict
 
-from typewriter.annotations.infer import infer_annotation
-from typewriter.annotations.parse import parse_json
-from typewriter.annotations.types import ARG_STAR, ARG_STARSTAR
+from typeright.annotations.infer import infer_annotation
+from typeright.annotations.parse import parse_json
+from typeright.annotations.types import ARG_STAR, ARG_STARSTAR
 
 # Schema of a function signature in the output
 Signature = TypedDict('Signature', {'arg_types': List[str],
@@ -51,7 +51,7 @@ def generate_annotations_json_string(source_path, only_simple=False):
 
     Data formats:
 
-    * The source JSON is a list of typewriter.annotations.parse.RawEntry items.
+    * The source JSON is a list of typeright.annotations.parse.RawEntry items.
     * The output JSON is a list of FunctionData items.
     """
     items = parse_json(source_path)

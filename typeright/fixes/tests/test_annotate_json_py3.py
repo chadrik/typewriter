@@ -10,9 +10,9 @@ try:
 except ImportError:
     from mock import patch
 
-from typewriter.fixes.fix_annotate_json import (BaseFixAnnotateFromSignature,
+from typeright.fixes.fix_annotate_json import (BaseFixAnnotateFromSignature,
                                                 FixAnnotateJson)
-from typewriter.fixes.tests import base_py3
+from typeright.fixes.tests import base_py3
 
 
 class TestFixAnnotateJson(base_py3.AnnotateFromSignatureTestCase):
@@ -20,9 +20,9 @@ class TestFixAnnotateJson(base_py3.AnnotateFromSignatureTestCase):
     def setUp(self):
         super(TestFixAnnotateJson, self).setUp(
             fix_list=["annotate_json"],
-            fixer_pkg="typewriter",
+            fixer_pkg="typeright",
             options={
-                'typewriter': {
+                'typeright': {
                     'annotation_style': 'py3',
                     'top_dir': '',
                 },
@@ -30,7 +30,7 @@ class TestFixAnnotateJson(base_py3.AnnotateFromSignatureTestCase):
         )
 
     def setTestData(self, data):
-        self.refactor.options['typewriter']['type_info'] = data
+        self.refactor.options['typeright']['type_info'] = data
         self.filename = data[0]["path"]
 
     def test_line_number_drift(self):
@@ -48,7 +48,7 @@ class TestFixAnnotateJson(base_py3.AnnotateFromSignatureTestCase):
             """
         self.warns(a, a, "signature from line 10 too far away -- skipping", unchanged=True)
 
-    @patch('typewriter.fixes.fix_annotate_json.BaseFixAnnotateFromSignature.set_filename')
+    @patch('typeright.fixes.fix_annotate_json.BaseFixAnnotateFromSignature.set_filename')
     def test_set_filename(self, mocked_set_filename):
         self.filename = "/path/to/fileA.py"
         # trigger the fixer to run, with no expected changes

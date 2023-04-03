@@ -1,9 +1,9 @@
 import unittest
 from typing import List, Tuple
 
-from typewriter.annotations.infer import (flatten_types, infer_annotation,
+from typeright.annotations.infer import (flatten_types, infer_annotation,
                                           merge_items, remove_redundant_items)
-from typewriter.annotations.types import (ARG_POS, ARG_STAR, AbstractType,
+from typeright.annotations.types import (ARG_POS, ARG_STAR, AbstractType,
                                           AnyType, ClassType, NoReturnType,
                                           TupleType, UnionType)
 

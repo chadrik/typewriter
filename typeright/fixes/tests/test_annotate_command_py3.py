@@ -4,8 +4,8 @@
 import json
 import subprocess
 
-from typewriter.fixes.fix_annotate_command import FixAnnotateCommand
-from typewriter.fixes.tests import base_py2
+from typeright.fixes.fix_annotate_command import FixAnnotateCommand
+from typeright.fixes.tests import base_py3
 
 try:
     from unittest.mock import patch
@@ -13,16 +13,15 @@ except ImportError:
     from mock import patch
 
 
-class TestFixAnnotateCommand(base_py2.AnnotateFromSignatureTestCase):
+class TestFixAnnotateCommand(base_py3.AnnotateFromSignatureTestCase):
 
     def setUp(self):
         super(TestFixAnnotateCommand, self).setUp(
             fix_list=["annotate_command"],
-            fixer_pkg="typewriter",
+            fixer_pkg="typeright",
             options={
-                'typewriter': {
-                    'annotation_style': 'py2',
-                    'comment_style': 'auto',
+                'typeright': {
+                    'annotation_style': 'py3',
                     'command': "fake {funcname} {filename}",
                 },
             },

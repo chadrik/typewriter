@@ -19,7 +19,7 @@ else:
 
 from typing import List
 
-from typewriter.__main__ import main as dunder_main
+from typeright.__main__ import main as dunder_main
 
 
 class TestDunderMain(unittest.TestCase):

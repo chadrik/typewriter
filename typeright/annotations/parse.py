@@ -12,7 +12,7 @@ from typing import Any, List, Mapping, NoReturn, Set, Text, Tuple
 
 from typing_extensions import TypedDict
 
-from typewriter.annotations.types import (ARG_POS, ARG_STAR, ARG_STARSTAR,
+from typeright.annotations.types import (ARG_POS, ARG_STAR, ARG_STARSTAR,
                                           AbstractType, AnyType, Argument,
                                           ClassType, NoReturnType, TupleType,
                                           UnionType)

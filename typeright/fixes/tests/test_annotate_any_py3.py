@@ -5,7 +5,7 @@ import unittest
 from lib2to3.tests.test_fixers import FixerTestCase
 
 # deadcode: fix_annotate is used as part of the fixer_pkg for this test
-from typewriter.fixes import base
+from typeright.fixes import base
 
 
 class TestFixAnnotate3(FixerTestCase):
@@ -13,9 +13,9 @@ class TestFixAnnotate3(FixerTestCase):
     def setUp(self):
         super(TestFixAnnotate3, self).setUp(
             fix_list=["annotate_any"],
-            fixer_pkg="typewriter",
+            fixer_pkg="typeright",
             options={
-                'typewriter': {
+                'typeright': {
                     'annotation_style': 'py3',
                 },
             },

@@ -600,7 +600,7 @@ class AnnotateFromSignatureTestCase(FixerTestCase):
             """
         self.check(a, b)
 
-    @patch('typewriter.fixes.fix_annotate_json.BaseFixAnnotateFromSignature.set_filename')
+    @patch('typeright.fixes.fix_annotate_json.BaseFixAnnotateFromSignature.set_filename')
     def test_set_filename(self, mocked_set_filename):
         self.filename = "/path/to/fileA.py"
         # trigger the fixer to run, with no expected changes

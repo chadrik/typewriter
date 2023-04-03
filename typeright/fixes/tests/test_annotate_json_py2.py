@@ -5,9 +5,9 @@ import json
 import os
 import tempfile
 
-from typewriter.fixes.fix_annotate_json import (BaseFixAnnotateFromSignature,
+from typeright.fixes.fix_annotate_json import (BaseFixAnnotateFromSignature,
                                                 FixAnnotateJson)
-from typewriter.fixes.tests import base_py2
+from typeright.fixes.tests import base_py2
 
 
 class TestFixAnnotateJson(base_py2.AnnotateFromSignatureTestCase):
@@ -15,9 +15,9 @@ class TestFixAnnotateJson(base_py2.AnnotateFromSignatureTestCase):
     def setUp(self):
         super(TestFixAnnotateJson, self).setUp(
             fix_list=["annotate_json"],
-            fixer_pkg="typewriter",
+            fixer_pkg="typeright",
             options={
-                'typewriter': {
+                'typeright': {
                     'annotation_style': 'py2',
                     'comment_style': 'auto',
                     'top_dir': '',
@@ -27,7 +27,7 @@ class TestFixAnnotateJson(base_py2.AnnotateFromSignatureTestCase):
 
     def setTestData(self, data):
         self.filename = data[0]["path"]
-        self.refactor.options['typewriter']['type_info'] = data
+        self.refactor.options['typeright']['type_info'] = data
 
     def test_line_number_drift(self):
         self.setTestData(

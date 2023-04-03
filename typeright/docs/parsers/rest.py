@@ -9,7 +9,7 @@ from docutils.nodes import Element, Node  # type: ignore
 from docutils.readers.standalone import Reader as _Reader
 from docutils.utils import SystemMessage
 
-from typewriter.docs.parsers import Arg
+from typeright.docs.parsers import Arg
 
 
 def _clean_type(s):

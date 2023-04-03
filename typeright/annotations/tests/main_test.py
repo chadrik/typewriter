@@ -5,8 +5,8 @@ import textwrap
 import unittest
 from typing import Iterator
 
-from typewriter.annotations.infer import InferError
-from typewriter.annotations.main import (generate_annotations_json,
+from typeright.annotations.infer import InferError
+from typeright.annotations.main import (generate_annotations_json,
                                          generate_annotations_json_string)
 
 

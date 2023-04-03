@@ -1,6 +1,6 @@
 import unittest
 
-from typewriter.annotations.types import (AnyType, ClassType, TupleType,
+from typeright.annotations.types import (AnyType, ClassType, TupleType,
                                           UnionType)
 
 
