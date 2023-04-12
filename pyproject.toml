@@ -5,7 +5,7 @@ description = "Add type annotations to your source code"
 authors = ["Chad Dombrova <chadrik@gmail.com>"]
 license = "Apache-2.0"
 readme = "README.md"
-repository = "https://github.com/chadrik/typeright"
+repository = "https://github.com/chadrik/typewriter"
 keywords = ["pep484", "typing", "annotations", "mypy"]
 classifiers = [
     'Development Status :: 3 - Alpha',
