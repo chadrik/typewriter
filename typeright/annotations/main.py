@@ -1,9 +1,13 @@
 """Main entry point to mypy annotation inference utility."""
 
 import json
+import sys
 from typing import List
 
-from typing_extensions import TypedDict
+if sys.version_info[:2] < (3, 10):
+    from typing_extensions import TypedDict
+else:
+    from typing import TypedDict
 
 from typeright.annotations.infer import infer_annotation
 from typeright.annotations.parse import parse_json
