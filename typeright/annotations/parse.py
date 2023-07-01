@@ -10,12 +10,15 @@ import re
 import sys
 from typing import Any, List, Mapping, NoReturn, Set, Text, Tuple
 
-from typing_extensions import TypedDict
+if sys.version_info[:2] < (3, 10):
+    from typing_extensions import TypedDict
+else:
+    from typing import TypedDict
 
 from typeright.annotations.types import (ARG_POS, ARG_STAR, ARG_STARSTAR,
-                                          AbstractType, AnyType, Argument,
-                                          ClassType, NoReturnType, TupleType,
-                                          UnionType)
+                                         AbstractType, AnyType, Argument,
+                                         ClassType, NoReturnType, TupleType,
+                                         UnionType)
 
 PY2 = sys.version_info < (3,)
 
