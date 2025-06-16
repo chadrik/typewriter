@@ -1,4 +1,4 @@
-# typeright: Generate Python Type Annotations
+# typewriter: Generate Python Type Annotations
 
 Insert PEP 484 type annotations into your python source code.
 
